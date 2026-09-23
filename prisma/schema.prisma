@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── Cuentas (login) ─────────
+// PLATFORM_ADMIN = dueño de la plataforma (panel /super)
+// SHOP_OWNER     = barbería cliente (panel /admin)
+model Account {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("SHOP_OWNER")
+  active       Boolean  @default(true)
+  branches     Branch[]
+  createdAt    DateTime @default(now())
+}
+
+// ── Sucursales ──────────────
+model Branch {
+  id        String   @id @default(cuid())
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+  name    String
+  address String
+  phone   String
+  active  Boolean  @default(true)
+  barbers Barber[]
+  services Service[]
+  bookings Booking[]
+  createdAt DateTime @default(now())
+}
+
+// ── Barberos ────────────────
+model Barber {
+  id       String  @id @default(cuid())
+  branchId String
+  branch   Branch  @relation(fields: [branchId], references: [id])
+  name     String
+  active   Boolean @default(true)
+  shifts   Shift[]
+  blocks   Block[]
+  bookings Booking[]
+  notes    ClientNote[]
+  createdAt DateTime @default(now())
+}
+
+// ── Servicios ───────────────
+model Service {
+  id          String  @id @default(cuid())
+  branchId    String?
+  branch      Branch?  @relation(fields: [branchId], references: [id])
+  name        String
+  description String?
+  durationMin Int
+  price       Int
+  active      Boolean @default(true)
+  sortOrder   Int     @default(0)
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+}
+
+// ── Clientes ────────────────
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  bookings  Booking[]
+  notes     ClientNote[]
+  createdAt DateTime @default(now())
+
+  @@unique([phone])
+}
+
+// ── Notas privadas del barbero sobre un cliente ─────────────
+model ClientNote {
+  id       String @id @default(cuid())
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  barberId String
+  barber   Barber @relation(fields: [barberId], references: [id])
+  text     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Turnos de trabajo (por día de semana, permite 2 bloques/día) ──
+model Shift {
+  id       String @id @default(cuid())
+  barberId String
+  barber   Barber @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  weekday  Int    // 0 = domingo … 6 = sábado
+  startMin Int    // minutos desde medianoche
+  endMin   Int
+}
+
+// ── Bloqueos puntuales (almuerzo, imprevistos) ──────────────
+model Block {
+  id       String  @id @default(cuid())
+  barberId String
+  barber   Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  date     String  // YYYY-MM-DD
+  startMin Int
+  endMin   Int
+  reason   String?
+  createdAt DateTime @default(now())
+}
+
+// ── Reservas ────────────────
+model Booking {
+  id        String  @id @default(cuid())
+  token     String  @unique @default(cuid())
+  branchId  String
+  branch    Branch  @relation(fields: [branchId], references: [id])
+  barberId  String?
+  barber    Barber? @relation(fields: [barberId], references: [id])
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id])
+  date      String  // YYYY-MM-DD (hora local)
+  startMin  Int
+  endMin    Int
+  status    String  @default("RESERVADO") // RESERVADO | ATENDIDO | CANCELADO | NO_ASISTIO
+  createdAt DateTime @default(now())
+
+  @@index([date])
+  @@index([barberId, date])
+}
