@@ -27,7 +27,7 @@ export default function SuperView() {
 
   // Nueva sucursal
   const [creatingBranch, setCreatingBranch] = useState(false);
-  const [branchForm, setBranchForm] = useState({ name: "", address: "", ownerEmail: "", ownerPassword: "" });
+  const [branchForm, setBranchForm] = useState({ name: "", address: "", phone: "", ownerEmail: "", ownerPassword: "" });
   const [savingBranch, setSavingBranch] = useState(false);
   const [branchError, setBranchError] = useState<string | null>(null);
 
@@ -59,7 +59,7 @@ export default function SuperView() {
     const r = await fetch("/api/super/branches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, accountId }),
+      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, phone: branchForm.phone, accountId }),
     });
     const data = await r.json();
     setSavingBranch(false);
@@ -68,7 +68,7 @@ export default function SuperView() {
       return;
     }
     setCreatingBranch(false);
-    setBranchForm({ name: "", address: "", ownerEmail: "", ownerPassword: "" });
+    setBranchForm({ name: "", address: "", phone: "", ownerEmail: "", ownerPassword: "" });
     load();
   };
   const [editName, setEditName] = useState("");
@@ -237,10 +237,13 @@ export default function SuperView() {
           <p className="mt-0.5 text-xs text-zinc-500">Se crea la sucursal y opcionalmente su login para /admin.</p>
           <div className="mt-4 space-y-3">
             <Field label="Nombre de la barbería / sucursal">
-              <input value={branchForm.name} onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })} className={inputCls} />
+              <input value={branchForm.name} onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })} className={inputCls} placeholder="Barbería El Estilo" />
             </Field>
             <Field label="Dirección (opcional)">
               <input value={branchForm.address} onChange={(e) => setBranchForm({ ...branchForm, address: e.target.value })} className={inputCls} />
+            </Field>
+            <Field label="Teléfono">
+              <input value={branchForm.phone} onChange={(e) => setBranchForm({ ...branchForm, phone: e.target.value })} className={inputCls} placeholder="+56 9 1234 5678" />
             </Field>
             <div className="rounded-lg bg-zinc-50 p-3">
               <p className="text-xs font-semibold text-zinc-600">Login de la barbería (opcional pero recomendado)</p>
@@ -358,8 +361,14 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>
