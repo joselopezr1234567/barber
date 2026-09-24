@@ -99,6 +99,13 @@ export default function BookingWizard() {
     if (step === 2) loadSlots();
   }, [step, loadSlots]);
 
+  const [branchSearch, setBranchSearch] = useState("");
+  const filteredBranches = branches.filter(
+    (b) =>
+      b.name.toLowerCase().includes(branchSearch.trim().toLowerCase()) ||
+      b.address.toLowerCase().includes(branchSearch.trim().toLowerCase())
+  );
+
   const submit = async () => {
     if (!branchId || !serviceId || startMin === null) return;
     setSubmitting(true);
@@ -167,8 +174,15 @@ export default function BookingWizard() {
         <section className="animate-fade-up">
           <h2 className="text-xl font-bold">¿Dónde quieres tu cita?</h2>
           <p className="mt-1 text-sm text-zinc-400">Elige la sucursal más cercana.</p>
+          <input
+            type="search"
+            value={branchSearch}
+            onChange={(e) => setBranchSearch(e.target.value)}
+            placeholder="Buscar barbería por nombre…"
+            className="mt-4 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-gold-500 focus:outline-none"
+          />
           <div className="mt-4 space-y-3">
-            {branches.map((b) => (
+            {filteredBranches.map((b) => (
               <button
                 key={b.id}
                 onClick={() => { setBranchId(b.id); setBarberId("ANY"); }}
@@ -183,6 +197,9 @@ export default function BookingWizard() {
                 <p className="text-sm text-zinc-500">{b.phone}</p>
               </button>
             ))}
+            {filteredBranches.length === 0 && (
+              <p className="py-6 text-center text-sm text-zinc-500">No encontramos barberías con ese nombre.</p>
+            )}
           </div>
         </section>
       )}

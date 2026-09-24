@@ -5,6 +5,7 @@ import LogoutButton from "../LogoutButton";
 
 const NAV = [
   { href: "/admin", label: "Agenda", icon: "🗓️" },
+  { href: "/admin/trabajadores", label: "Trabajadores", icon: "👷" },
   { href: "/admin/horarios", label: "Horarios", icon: "⏰" },
   { href: "/admin/servicios", label: "Servicios", icon: "✂️" },
   { href: "/admin/clientes", label: "Clientes", icon: "👤" },

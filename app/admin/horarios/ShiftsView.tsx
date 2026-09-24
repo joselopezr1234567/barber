@@ -3,18 +3,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { minToLabel, labelToMin, WEEKDAYS } from "@/lib/time";
 
-type Barber = { id: string; name: string; branchId: string; active: boolean };
+type Barber = { id: string; name: string; branchId: string; active: boolean; branch?: { name: string } };
+type BranchRef = { id: string; name: string };
 type Shift = { id?: string; weekday: number; startMin: number; endMin: number };
 
 /** Estado local: por día, lista de bloques {start,end} en "HH:MM" */
 type DayBlock = { start: string; end: string };
 type DayBlocks = DayBlock[][]; // un array por cada día de la semana
-type BranchWithBarbers = { barbers: Barber[] };
 const emptyWeek = (): DayBlocks =>
   Array.from({ length: 7 }, () => [] as DayBlock[]);
 
 export default function ShiftsView() {
   const [barbers, setBarbers] = useState<Barber[]>([]);
+  const [branches, setBranches] = useState<BranchRef[]>([]);
+  const [branchId, setBranchId] = useState<string>("all");
   const [barberId, setBarberId] = useState<string | null>(null);
   const [days, setDays] = useState<DayBlocks>(emptyWeek);
   const [saving, setSaving] = useState(false);
@@ -22,13 +24,26 @@ export default function ShiftsView() {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch("/api/public/bootstrap");
+      const res = await fetch("/api/admin/barbers");
+      if (!res.ok) return;
       const data = await res.json();
-      const all = data.branches.flatMap((b: BranchWithBarbers) => b.barbers);
+      const all: Barber[] = Array.isArray(data.barbers) ? data.barbers : [];
       setBarbers(all);
-      if (all.length > 0) setBarberId(all[0].id);
+      const brs: BranchRef[] = Array.isArray(data.branches) ? data.branches : [];
+      setBranches(brs);
+      // Por defecto mostrar solo la primera sucursal (evita mezclar barberos de otras barberías)
+      const firstBranch = brs[0]?.id ?? "all";
+      setBranchId(firstBranch);
+      const first = all.find((b) => firstBranch === "all" || b.branchId === firstBranch);
+      setBarberId(first?.id ?? (all[0]?.id ?? null));
     })();
   }, []);
+
+  const visibleBarbers = barbers.filter(
+    (b) => branchId === "all" || b.branchId === branchId
+  );
+  const branchLabel = (b: Barber) =>
+    b.branch?.name ?? branches.find((x) => x.id === b.branchId)?.name ?? "";
 
   const load = useCallback(async () => {
     if (!barberId) return;
@@ -91,12 +106,32 @@ export default function ShiftsView() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {branches.length > 1 && (
+            <select
+              value={branchId}
+              onChange={(e) => {
+                setBranchId(e.target.value);
+                const first = barbers.find(
+                  (b) => e.target.value === "all" || b.branchId === e.target.value
+                );
+                setBarberId(first?.id ?? null);
+              }}
+              className="rounded-lg border-zinc-300 bg-white px-3 py-2 text-sm"
+            >
+              <option value="all">Todas las sucursales</option>
+              {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          )}
           <select
             value={barberId ?? ""}
             onChange={(e) => setBarberId(e.target.value)}
             className="rounded-lg border-zinc-300 bg-white px-3 py-2 text-sm"
           >
-            {barbers.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            {visibleBarbers.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}{branchLabel(b) ? ` — ${branchLabel(b)}` : ""}
+              </option>
+            ))}
           </select>
           <button
             onClick={save}
