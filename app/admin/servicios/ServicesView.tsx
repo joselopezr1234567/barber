@@ -61,6 +61,17 @@ export default function ServicesView() {
     load();
   };
 
+  const remove = async (s: Service) => {
+    if (!confirm(`¿Eliminar el servicio "${s.name}"? Si tiene reservas asociadas quedará pausado en lugar de borrarse.`)) return;
+    const res = await fetch(`/api/admin/services/${s.id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error ?? "Error al eliminar");
+      return;
+    }
+    load();
+  };
+
   return (
     <div className="min-w-[700px]">
       <div className="flex items-center justify-between">
@@ -105,6 +116,7 @@ export default function ServicesView() {
                   <button onClick={() => toggle(s)} className="ml-3 text-xs font-medium text-zinc-500 hover:underline">
                     {s.active ? "Pausar" : "Activar"}
                   </button>
+                  <button onClick={() => remove(s)} className="ml-3 text-xs font-medium text-red-600 hover:underline">Eliminar</button>
                 </td>
               </tr>
             ))}

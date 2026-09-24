@@ -34,7 +34,7 @@ export default function AgendaView() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [loading, setLoading] = useState(true);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [blockForm, setBlockForm] = useState<{ barberId: string; open: boolean; start: string; end: string; para: string; reason: string }>({
+  const [blockForm, setBlockForm] = useState<{ barberId: string; open: boolean; start: string; end: string; reason: string }>({
     barberId: "", open: false, start: "13:00", end: "14:00", reason: "Almuerzo",
   });
   const [newBarber, setNewBarber] = useState<{ open: boolean; name: string; saving: boolean }>({
