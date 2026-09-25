@@ -11,7 +11,12 @@ export async function GET() {
   const accounts = await prisma.account.findMany({
     orderBy: { createdAt: "asc" },
     include: {
-      branches: { select: { id: true, name: true } },
+      branches: {
+        select: {
+          id: true, name: true,
+          barbers: { select: { id: true, name: true, active: true } },
+        },
+      },
     },
   });
   const branches = await prisma.branch.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });

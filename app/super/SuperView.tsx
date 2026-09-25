@@ -6,8 +6,8 @@ type BranchRef = { id: string; name: string };
 type BranchFull = { id: string; name: string; address: string | null; ownerName: string | null; ownerEmail: string | null };
 type Account = {
   id: string; email: string; name: string; role: string; active: boolean;
-  createdAt: string; branches: BranchRef[];
-};
+  createdAt: string;       branches: { id: string; name: string; barbers: { id: string; name: string; active: boolean }[] }[];
+  };
 
 const EMPTY_FORM = { name: "", email: "", password: "", role: "SHOP_OWNER" };
 
@@ -24,6 +24,7 @@ export default function SuperView() {
   const [saving, setSaving] = useState(false);
 
   const [editing, setEditing] = useState<Account | null>(null);
+  const [viewingBarbers, setViewingBarbers] = useState<Account | null>(null);
 
   // Nueva sucursal
   const [creatingBranch, setCreatingBranch] = useState(false);
@@ -159,6 +160,16 @@ export default function SuperView() {
   const branchNames = (a: Account) =>
     a.branches.length ? a.branches.map((b) => b.name).join(", ") : "—";
 
+  const barberCounts = (a: Account) => {
+    const total = a.branches.reduce((n, b) => n + (b.barbers?.length ?? 0), 0);
+    return total;
+  };
+
+  const allBarbers = (a: Account) =>
+    a.branches.flatMap((b) =>
+      (b.barbers ?? []).map((w) => ({ ...w, branchName: b.name }))
+    );
+
   return (
     <div className="min-w-[800px]">
       <div className="flex items-center justify-between">
@@ -191,6 +202,7 @@ export default function SuperView() {
               <th className="px-4 py-3">Cuenta</th>
               <th className="px-4 py-3">Rol</th>
               <th className="px-4 py-3">Sucursales</th>
+              <th className="px-4 py-3">Trabajadores</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Acciones</th>
             </tr>
@@ -210,6 +222,18 @@ export default function SuperView() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-xs">{branchNames(a)}</td>
+                <td className="px-4 py-3 text-xs">
+                  {barberCounts(a) === 0 ? (
+                    <span className="text-zinc-400">—</span>
+                  ) : (
+                    <button
+                      onClick={() => setViewingBarbers(a)}
+                      className="rounded-full bg-zinc-100 px-2 py-0.5 font-semibold text-zinc-700 hover:bg-zinc-200"
+                    >
+                      {barberCounts(a)} trab.
+                    </button>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                     a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
@@ -225,7 +249,7 @@ export default function SuperView() {
                 </td>
               </tr>
             ))}
-            {loading && <tr><td colSpan={5} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
+            {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
           </tbody>
         </table>
       </div>
@@ -308,6 +332,42 @@ export default function SuperView() {
               {saving ? "Creando…" : "Crear cuenta"}
             </button>
             <button onClick={() => setCreating(false)} className="rounded-lg border-zinc-300 px-4 py-2 text-sm">Cancelar</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal ver trabajadores */}
+      {viewingBarbers && (
+        <Modal onClose={() => setViewingBarbers(null)}>
+          <h3 className="font-semibold">Trabajadores de {viewingBarbers.name}</h3>
+          <p className="mt-0.5 text-xs text-zinc-500">{viewingBarbers.email}</p>
+          <div className="mt-4 space-y-3">
+            {allBarbers(viewingBarbers).length === 0 ? (
+              <p className="text-sm text-zinc-400">Esta barbería aún no registra trabajadores.</p>
+            ) : (
+              viewingBarbers.branches.map((b) => (
+                <div key={b.id}>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{b.name}</p>
+                  <ul className="mt-1 divide-y divide-zinc-100 rounded-lg border border-zinc-200">
+                    {(b.barbers ?? []).map((w) => (
+                      <li key={w.id} className="flex items-center justify-between px-3 py-2 text-sm">
+                        <span>{w.name}</span>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          w.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                        }`}>
+                          {w.active ? "Activo" : "Inactivo"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="mt-5">
+            <button onClick={() => setViewingBarbers(null)} className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-semibold text-white">
+              Cerrar
+            </button>
           </div>
         </Modal>
       )}
