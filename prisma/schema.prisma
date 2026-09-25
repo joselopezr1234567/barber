@@ -43,6 +43,8 @@ model Barber {
   branch   Branch  @relation(fields: [branchId], references: [id])
   name     String
   active   Boolean @default(true)
+  email    String? @unique
+  passwordHash String?
   shifts   Shift[]
   blocks   Block[]
   bookings Booking[]

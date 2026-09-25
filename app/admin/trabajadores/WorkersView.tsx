@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 
 type BranchRef = { id: string; name: string };
 type Barber = {
-  id: string; name: string; active: boolean; branchId: string;
+  id: string; name: string; active: boolean; branchId: string; email?: string | null;
   branch?: BranchRef;
 };
 
-const EMPTY = { name: "", branchId: "" };
+const EMPTY = { name: "", branchId: "", email: "", password: "" };
 
 export default function WorkersView() {
   const [barbers, setBarbers] = useState<Barber[]>([]);
@@ -22,6 +22,8 @@ export default function WorkersView() {
 
   const [editing, setEditing] = useState<Barber | null>(null);
   const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPassword, setEditPassword] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,6 +76,8 @@ export default function WorkersView() {
   const openEdit = (b: Barber) => {
     setEditing(b);
     setEditName(b.name);
+    setEditEmail(b.email ?? "");
+    setEditPassword("");
   };
 
   const saveEdit = async () => {
@@ -81,7 +85,7 @@ export default function WorkersView() {
     const res = await fetch(`/api/admin/barbers/${editing.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editName }),
+      body: JSON.stringify({ name: editName, email: editEmail, ...(editPassword && { password: editPassword }) }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -138,7 +142,10 @@ export default function WorkersView() {
           <tbody>
             {barbers.map((b) => (
               <tr key={b.id} className="border-b border-zinc-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{b.name}</td>
+                <td className="px-4 py-3">
+                  <p className="font-medium">{b.name}</p>
+                  <p className="text-xs text-zinc-500">{b.email ?? "Sin acceso"}</p>
+                </td>
                 <td className="px-4 py-3 text-xs text-zinc-500">{branchName(b)}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
@@ -174,6 +181,12 @@ export default function WorkersView() {
             <Field label="Nombre del barbero">
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
             </Field>
+            <Field label="Correo (para que el barbero inicie sesión)">
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputCls} placeholder="barbero@correo.cl" />
+            </Field>
+            <Field label="Contraseña (mín. 6)">
+              <input type="text" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={inputCls} placeholder="••••••" />
+            </Field>
             {branches.length > 1 && (
               <Field label="Sucursal">
                 <select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })} className={inputCls}>
@@ -183,7 +196,7 @@ export default function WorkersView() {
             )}
           </div>
           <div className="mt-5 flex gap-2">
-            <button onClick={create} disabled={saving || !form.name.trim()} className="flex-1 rounded-lg bg-zinc-900 py-2 text-sm font-semibold text-white disabled:opacity-40">
+            <button onClick={create} disabled={saving || !form.name.trim() || !form.email.trim() || form.password.length < 6} className="flex-1 rounded-lg bg-zinc-900 py-2 text-sm font-semibold text-white disabled:opacity-40">
               {saving ? "Creando…" : "Crear"}
             </button>
             <button onClick={() => setCreating(false)} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm">Cancelar</button>
@@ -198,6 +211,12 @@ export default function WorkersView() {
           <div className="mt-4 space-y-3">
             <Field label="Nombre">
               <input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Correo">
+              <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Nueva contraseña (dejar vacío para no cambiar)">
+              <input type="text" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} className={inputCls} />
             </Field>
           </div>
           <div className="mt-5 flex gap-2">

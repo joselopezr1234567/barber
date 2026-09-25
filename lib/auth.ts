@@ -83,6 +83,51 @@ export async function getSession(): Promise<SessionAccount | null> {
   return { id: account.id, email: account.email, name: account.name, role: account.role };
 }
 
+export type BarberSession = {
+  id: string;
+  email: string;
+  name: string;
+  active: boolean;
+  branchId: string;
+  branchName: string;
+};
+const BARBER_COOKIE = "barber_session";
+
+/** Crea la cookie de sesión de barbero. */
+export async function startBarberSession(barberId: string): Promise<void> {
+  const store = await cookies();
+  store.set(BARBER_COOKIE, sign({ id: barberId, exp: Date.now() + MAX_AGE * 1000 }), {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: MAX_AGE,
+  });
+}
+export async function endBarberSession(): Promise<void> {
+  const store = await cookies();
+  store.delete(BARBER_COOKIE);
+}
+/** Lee y valida la sesión de barbero; devuelve el barbero activo o null. */
+export async function getBarberSession(): Promise<BarberSession | null> {
+  const store = await cookies();
+  const token = store.get(BARBER_COOKIE)?.value;
+  if (!token) return null;
+  const payload = verify(token);
+  if (!payload) return null;
+  const barber = await prisma.barber.findUnique({
+    where: { id: payload.id },
+    include: { branch: { select: { id: true, name: true } } },
+  });
+  if (!barber || !barber.active) return null;
+  return {
+    id: barber.id,
+    email: barber.email ?? "",
+    name: barber.name,
+    active: barber.active,
+    branchId: barber.branchId,
+    branchName: barber.branch?.name ?? "",
+  };
+}
 /** Sucursales que puede administrar la cuenta. */
 export async function ownedBranchIds(account: { id: string }): Promise<string[]> {
   const branches = await prisma.branch.findMany({
