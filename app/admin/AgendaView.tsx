@@ -214,6 +214,22 @@ export default function AgendaView() {
                                 {STATUS_META[st].label}
                               </button>
                             ))}
+                            <div className="my-1 border-t border-zinc-200" />
+                            <button
+                              onClick={async () => {
+                                setOpenMenu(null);
+                                const res = await fetch(`/api/admin/bookings/${b.id}/remind`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ type: "RECORDATORIO" }),
+                                });
+                                const data = await res.json();
+                                alert(res.ok ? "📱 Recordatorio enviado" : data.error ?? "Error");
+                              }}
+                              className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-zinc-100"
+                            >
+                              📱 Enviar WhatsApp
+                            </button>
                           </div>
                         )}
                       </div>

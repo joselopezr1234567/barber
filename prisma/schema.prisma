@@ -130,6 +130,8 @@ model Booking {
   startMin  Int
   endMin    Int
   status    String  @default("RESERVADO") // RESERVADO | ATENDIDO | CANCELADO | NO_ASISTIO
+  reminderStatus String @default("PENDIENTE") // PENDIENTE | ENVIADO | FALLADO | DESCARTADO | CONFIRMADO
+  reminderType   String?               // "RECORDATORIO" | "CONFIRMACION"
   createdAt DateTime @default(now())
 
   @@index([date])
