@@ -25,6 +25,7 @@
     COPY --from=builder /app/.next/standalone ./
     COPY --from=builder /app/.next/static ./.next/static
     COPY --from=builder /app/prisma ./prisma
+    COPY --from=builder /app/lib ./lib
     COPY --from=builder /app/package*.json ./
     
     RUN npm ci --only=production && npx prisma generate
@@ -33,5 +34,5 @@
     ENV PORT=3000
     ENV HOSTNAME="0.0.0.0"
     
-    CMD ["sh", "-c", "npx prisma db push && node server.js"]
+    CMD ["sh", "-c", "npx prisma db push && npx tsx prisma/seed.ts && node server.js"]
     
