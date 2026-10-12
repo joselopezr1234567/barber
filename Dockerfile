@@ -33,6 +33,10 @@
     EXPOSE 3000
     ENV PORT=3000
     ENV HOSTNAME="0.0.0.0"
-    
-    CMD ["sh", "-c", "npx prisma db push && npx tsx prisma/seed.ts && node server.js"]
+        # DB en el volumen persistente /app/data (montar disco en Render apuntando a /app/data).
+    # Se puede sobreescribir con la variable de entorno DATABASE_URL del proveedor.
+    ENV DATABASE_URL="file:/app/data/prod.db"
+
+    # Migraciones al arrancar (persistente, NO borra datos). Seed solo si DB vacía.
+    CMD ["sh", "-c", "npx prisma db push --skip-generate && (node prisma/seed.js 2>/dev/null || npx tsx prisma/seed.ts) && node server.js"]
     

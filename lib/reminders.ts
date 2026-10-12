@@ -2,7 +2,7 @@ import twilio from "twilio";
 import { prisma } from "./db";
 import { minToLabel, prettyDate, toDateStr, addDaysStr } from "./time";
 
-// ── Config Twilio (WhatsApp) ─────────────────────────────────
+// ── Config Twilio (WhatsApp) ─────────────────────────────────────────────
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const fromNumber = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886"; // sandbox por defecto
@@ -10,6 +10,56 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
 
 export const twilioEnabled = Boolean(accountSid && authToken);
 const client = twilioEnabled ? twilio(accountSid!, authToken!) : null;
+
+// ── Plantilla con botones Quick Reply (sin URLs; el webhook procesa la respuesta) ──
+// WhatsApp permite máx 3 quick replies. Los ids viajan en la respuesta del usuario.
+const CONTENT_NAME = "gestion_cita_botones";
+const BUTTON_CONFIRM = "✅ Confirmar";
+const BUTTON_RESCHEDULE = "🔄 Reprogramar";
+const BUTTON_CANCEL = "❌ Cancelar";
+
+async function twilioRest(path: string, method: string, payload?: unknown): Promise<any> {
+  const res = await fetch(`https://content.twilio.com/v1${path}`, {
+    method,
+    headers: {
+      "Authorization": "Basic " + Buffer.from(`${accountSid}:${authToken}`).toString("base64"),
+      "Content-Type": "application/json",
+    },
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
+  if (!res.ok) throw new Error(`Twilio REST ${res.status}: ${await res.text()}`);
+  return res.status === 204 ? null : res.json();
+}
+
+async function ensureButtonsContent(): Promise<string | null> {
+  if (!accountSid || !authToken) return null;
+  try {
+    // Buscar si ya existe
+    const list = await twilioRest("/ContentAndApprovals?PageSize=100", "GET");
+    const mine = (list?.contents ?? []).find((c: any) => c.friendly_name === CONTENT_NAME);
+    if (mine) return mine.content_sid ?? mine.sid;
+    // Crear plantilla con 3 botones quick reply (sin URL)
+    const created = await twilioRest("/Content", "POST", {
+      friendly_name: CONTENT_NAME,
+      language: "es",
+      variables: { 1: "cuerpo" },
+      types: {
+        "twilio/quick-reply": {
+          body: "{{1}}",
+          actions: [
+            { type: "QUICK_REPLY", title: BUTTON_CONFIRM, id: "CONFIRMAR" },
+            { type: "QUICK_REPLY", title: BUTTON_RESCHEDULE, id: "REPROGRAMAR" },
+            { type: "QUICK_REPLY", title: BUTTON_CANCEL, id: "CANCELAR" },
+          ],
+        },
+      },
+    });
+    return created.sid;
+  } catch (e) {
+    console.warn("[twilio] no se pudo crear/obtener la plantilla con botones:", (e as Error).message);
+    return null;
+  }
+}
 
 /** Normaliza un teléfono chileno al formato wa:+569XXXXXXXX */
 export function toWhatsApp(phone: string): string {
@@ -23,6 +73,7 @@ export function toWhatsApp(phone: string): string {
 function links(token: string) {
   const base = baseUrl || "";
   return {
+    gestionar: `${base}/c/${token}`,
     confirmar: `${base}/api/public/bookings/${token}/confirm`,
     reprogramar: `${base}/reservar?reprogramar=${token}`,
     cancelar: `${base}/api/public/bookings/${token}/cancel`,
@@ -46,13 +97,31 @@ export function buildReminderMessage(
   const base = `💈 *${data.branchName}*\nHola ${data.clientName.split(" ")[0]}! Te recordamos tu cita:\n\n✂️ *${data.serviceName}*\n👨‍🔧 Barbero: ${data.barberName}\n📅 ${cuando}\n\n`;
 
   if (type === "RECORDATORIO") {
-    return `${base}Tu cita es *mañana*. Si necesitas cambiarla:\n🔄 Reprogramar: ${l.reprogramar}\n❌ Cancelar: ${l.cancelar}`;
+    return `${base}Tu cita es *mañana*. Responde con los botones de abajo:\n✅ Confirmar asistencia\n🔄 Reprogramar\n❌ Cancelar`;
   }
-  return `${base}*¿Confirmas tu asistencia hoy?*\n\n✅ Confirmar: ${l.confirmar}\n❌ Cancelar: ${l.cancelar}`;
+  return `${base}*¿Confirmas tu asistencia hoy?*\n\nResponde con los botones de abajo:\n✅ Confirmar\n🔄 Reprogramar\n❌ Cancelar`;
 }
 
-async function sendWhatsApp(to: string, body: string): Promise<boolean> {
+async function sendWhatsApp(to: string, body: string, _urls?: unknown): Promise<boolean> {
   if (!client) return false;
+
+  // 1) Intentar con plantilla de botones Quick Reply
+  const contentSid = await ensureButtonsContent();
+  if (contentSid) {
+    try {
+      await client.messages.create({
+        from: fromNumber,
+        to,
+        contentSid,
+        contentVariables: JSON.stringify({ 1: body }),
+      });
+      return true;
+    } catch (e) {
+      console.warn("[twilio] envío con botones falló, probando texto plano:", (e as Error).message);
+    }
+  }
+
+  // 2) Fallback: texto plano con links
   try {
     await client.messages.create({ from: fromNumber, to, body });
     return true;
@@ -60,6 +129,11 @@ async function sendWhatsApp(to: string, body: string): Promise<boolean> {
     console.error("[twilio] error enviando:", e);
     return false;
   }
+}
+
+// ── Envío de prueba (usado por scripts/test-whatsapp.ts) ─────────────────
+export async function sendTestWhatsApp(to: string, body: string, token: string): Promise<boolean> {
+  return sendWhatsApp(to, body, links(token));
 }
 
 // ── Envío individual ─────────────────────────────────────────
@@ -81,7 +155,7 @@ export async function sendReminderForBooking(bookingId: string, type: "RECORDATO
     startMin: booking.startMin,
   });
 
-  const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body);
+  const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token));
   await prisma.booking.update({
     where: { id: booking.id },
     data: {
@@ -152,7 +226,7 @@ export async function processReminders(): Promise<{ processed: number; sent: num
       startMin: booking.startMin,
     });
 
-    const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body);
+    const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token));
     await prisma.booking.update({
       where: { id: booking.id },
       data: { reminderStatus: sent ? "ENVIADO" : "FALLADO", reminderType: type },

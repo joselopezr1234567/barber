@@ -10,7 +10,7 @@ type Barber = { id: string; name: string };
 type Service = { id: string; name: string; durationMin: number; price: number };
 type Client = { id: string; name: string; phone: string };
 type Booking = {
-  id: string; startMin: number; endMin: number; status: string;
+  id: string; startMin: number; endMin: number; status: string; reminderStatus?: string;
   service: Service; client: Client; barberId: string | null;
 };
 type Block = { id: string; barberId: string; startMin: number; endMin: number; reason: string | null };
@@ -18,6 +18,7 @@ type Shift = { barberId: string; startMin: number; endMin: number };
 
 const STATUS_META: Record<string, { label: string; badge: string; dot: string }> = {
   RESERVADO: { label: "Reservado", badge: "bg-blue-100 text-blue-800 border-blue-200", dot: "bg-blue-500" },
+  CONFIRMADO: { label: "Confirmado", badge: "bg-green-100 text-green-800 border-green-200", dot: "bg-green-500" },
   ATENDIDO: { label: "Atendido", badge: "bg-emerald-100 text-emerald-800 border-emerald-200", dot: "bg-emerald-500" },
   CANCELADO: { label: "Cancelado", badge: "bg-zinc-200 text-zinc-500 border-zinc-300", dot: "bg-zinc-400" },
   NO_ASISTIO: { label: "No asistió", badge: "bg-red-100 text-red-700 border-red-200", dot: "bg-red-500" },
@@ -180,7 +181,8 @@ export default function AgendaView() {
                   .filter((b) => b.barberId === barber.id)
                   .sort((a, b) => a.startMin - b.startMin)
                   .map((b) => {
-                    const meta = STATUS_META[b.status];
+                    const effective = b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status;
+                    const meta = STATUS_META[effective] ?? STATUS_META[b.status];
                     return (
                       <div key={b.id} className="relative">
                         <button
@@ -199,6 +201,11 @@ export default function AgendaView() {
                           </div>
                           <p className={`mt-1 font-medium ${b.status === "CANCELADO" ? "line-through" : ""}`}>{b.client.name}</p>
                           <p className="text-xs opacity-80">{b.service.name} · {formatPrice(b.service.price)}</p>
+                          {b.reminderStatus === "CONFIRMADO" && b.status === "RESERVADO" && (
+                            <p className="mt-1 inline-block rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                              ✅ Confirmado
+                            </p>
+                          )}
                         </button>
                         {openMenu === b.id && (
                           <div className="absolute right-2 top-2 z-10 w-44 rounded-lg border-zinc-200 bg-white p-1 shadow-lg">

@@ -107,20 +107,24 @@ async function main() {
 
   const today = toDateStr(new Date());
 
-  await prisma.booking.create({ data: { branchId: central.id, barberId: carlos.id, serviceId: corte.id, clientId: pedro.id, date: today, startMin: 10 * 60, endMin: 10 * 60 + 30, status: "ATENDIDO" } });
-  await prisma.booking.create({ data: { branchId: central.id, barberId: carlos.id, serviceId: combo.id, clientId: lucas.id, date: today, startMin: 11 * 60, endMin: 11 * 60 + 50, status: "RESERVADO" } });
-  await prisma.booking.create({ data: { branchId: central.id, barberId: jorge.id, serviceId: afeitado.id, clientId: mateo.id, date: today, startMin: 15 * 60, endMin: 15 * 60 + 30, status: "RESERVADO" } });
-  await prisma.booking.create({ data: { branchId: central.id, barberId: miguel.id, serviceId: corte.id, clientId: pedro.id, date: today, startMin: 16 * 60, endMin: 16 * 60 + 30, status: "NO_ASISTIO" } });
+  // Reservas demo: solo si la BD no tiene ninguna (evita duplicados en cada arranque)
+  const existingBookings = await prisma.booking.findFirst();
+  if (!existingBookings) {
+    await prisma.booking.create({ data: { branchId: central.id, barberId: carlos.id, serviceId: corte.id, clientId: pedro.id, date: today, startMin: 10 * 60, endMin: 10 * 60 + 30, status: "ATENDIDO" } });
+    await prisma.booking.create({ data: { branchId: central.id, barberId: carlos.id, serviceId: combo.id, clientId: lucas.id, date: today, startMin: 11 * 60, endMin: 11 * 60 + 50, status: "RESERVADO" } });
+    await prisma.booking.create({ data: { branchId: central.id, barberId: jorge.id, serviceId: afeitado.id, clientId: mateo.id, date: today, startMin: 15 * 60, endMin: 15 * 60 + 30, status: "RESERVADO" } });
+    await prisma.booking.create({ data: { branchId: central.id, barberId: miguel.id, serviceId: corte.id, clientId: pedro.id, date: today, startMin: 16 * 60, endMin: 16 * 60 + 30, status: "NO_ASISTIO" } });
 
-  // Nota privada de ejemplo
-  await prisma.clientNote.create({
-    data: { clientId: pedro.id, barberId: carlos.id, text: "Degradado medio, peineta #1.5 en lados, prefiere patillas en punta." },
-  });
+    // Nota privada de ejemplo
+    await prisma.clientNote.create({
+      data: { clientId: pedro.id, barberId: carlos.id, text: "Degradado medio, peineta #1.5 en lados, prefiere patillas en punta." },
+    });
 
-  // Bloqueo de ejemplo (imprevisto)
-  await prisma.block.create({
-    data: { barberId: jorge.id, date: today, startMin: 18 * 60, endMin: 19 * 60, reason: "Imprevisto personal" },
-  });
+    // Bloqueo de ejemplo (imprevisto)
+    await prisma.block.create({
+      data: { barberId: jorge.id, date: today, startMin: 18 * 60, endMin: 19 * 60, reason: "Imprevisto personal" },
+    });
+  }
 
   console.log("Seed completado ✅");
 }
