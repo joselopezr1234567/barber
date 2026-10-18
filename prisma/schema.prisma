@@ -8,7 +8,7 @@ datasource db {
 }
 
 // Nota: en producción DATABASE_URL debe apuntar a un volumen persistente,
-// ej: file:/app/data/prod.db (mounted como volume en el host)
+// ej: file:/app/data/proagenda.db (mounted como volume en el host)
 
 // ── Cuentas (login) ─────────
 // PLATFORM_ADMIN = dueño de la plataforma (panel /super)

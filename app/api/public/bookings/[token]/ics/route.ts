@@ -20,9 +20,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Barberia Reservas//ES",
+    "PRODID:-//ProAgenda//ES",
     "BEGIN:VEVENT",
-    `UID:${booking.token}@barberia-reservas`,
+    `UID:${booking.token}@proagenda`,
     `DTSTAMP:${fmt(booking.startMin)}`,
     `DTSTART:${fmt(booking.startMin)}`,
     `DTEND:${fmt(booking.endMin)}`,

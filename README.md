@@ -1,13 +1,13 @@
-# 💈 Barbería Reservas
+# 📅 ProAgenda
 
-Sistema de reservas online para barberías: flujo de agendamiento móvil en 4 pasos para el
+Sistema de reservas online para negocios con agenda (barberías, peluquerías, spas, etc.): flujo de agendamiento móvil en 4 pasos para el
 cliente y panel de administración desktop/tablet para el local.
 
 ## Stack
 
 - **Next.js 15** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS** (tema oscuro con acentos dorados para el público, panel claro para admin)
-- **Prisma + SQLite** (`prisma/dev.db`)
+- **Prisma + SQLite** (`prisma/dev.db` en desarrollo, `/app/data/proagenda.db` en producción con disco persistente en Render)
 
 ## Cómo correr
 
@@ -51,9 +51,18 @@ Admin: `GET /api/admin/agenda`, `PATCH /api/admin/bookings/[id]`,
 `GET|POST|PATCH|DELETE /api/admin/services(/id)`, `GET|PUT /api/admin/shifts`,
 `GET|POST|DELETE /api/admin/blocks`, `GET /api/admin/clients(/id)`.
 
+## Persistencia en Render (importante)
+
+Para que la base de datos **no se borre** cuando el servicio se reinicia o redeploya:
+
+1. En Render, crea un **Disco persistente** en el servicio web (Render → servicio → Disks → *Add Disk*),
+   con **Mount path: `/app/data`**.
+2. Verifica que la variable de entorno sea `DATABASE_URL="file:/app/data/proagenda.db"`
+   (el Dockerfile ya la define por defecto).
+3. El disco persiste entre deploys y reinicios; sin él, SQLite se regenera en cada arranque y pierdes los datos.
+
 ## Notas
 
 - Precios en CLP (`$12.000`), horas en hora local (sin zonas horarias).
-- El panel admin no tiene autenticación todavía (recomendado agregarla antes de exponerlo).
 - Para reiniciar datos: borra `prisma/dev.db`, `npm run db:push && npm run db:seed`.
 # barber

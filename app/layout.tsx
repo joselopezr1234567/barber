@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Barbería Reservas — Agenda tu hora",
-  description: "Reserva tu corte en segundos. Elige servicio, barbero y hora disponible en tiempo real.",
+  title: "ProAgenda — Agenda tu hora",
+  description: "Reserva tu cita en segundos. Elige servicio, profesional y horario disponible en tiempo real."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

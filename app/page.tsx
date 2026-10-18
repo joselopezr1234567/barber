@@ -4,12 +4,12 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center">
       <div>
-        <p className="text-4xl">💈</p>
+        <p className="text-4xl">📅</p>
         <h1 className="mt-4 text-3xl font-bold sm:text-4xl">
-          Barbería <span className="text-gold-400">Reservas</span>
+          Pro<span className="text-gold-400">Agenda</span>
         </h1>
         <p className="mt-3 max-w-md text-zinc-400">
-          Agenda tu hora en segundos: servicio, barbero y horario disponible en tiempo real.
+          Agenda tu cita en segundos: servicio, profesional y horario disponible en tiempo real.
         </p>
       </div>
       <div className="flex w-full max-w-xs flex-col gap-3">

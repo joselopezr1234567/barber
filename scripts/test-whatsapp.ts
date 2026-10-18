@@ -29,7 +29,7 @@ async function main() {
 
   // Reutiliza la misma lógica de envío con botones quick-reply
   const { sendTestWhatsApp } = await import("../lib/reminders");
-  const ok = await sendTestWhatsApp(toWhatsApp(to), body);
+  const ok = await sendTestWhatsApp(toWhatsApp(to), body, booking.token);
   console.log(ok ? "✅ Enviado (revisa tu WhatsApp)" : "❌ Falló el envío (ver logs)");
   await prisma.$disconnect();
 }
