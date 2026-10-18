@@ -73,6 +73,21 @@ export default function BarberAgendaView({
     load();
   };
 
+  const sendWhatsApp = async (bookingId: string) => {
+    const res = await fetch(`/api/barber/agenda/remind`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId, type: "CONFIRMACION" }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.error ?? "Error al enviar el WhatsApp");
+      return;
+    }
+    alert("📱 WhatsApp de confirmación enviado");
+    load();
+  };
+
   const logout = async () => {
     await fetch("/api/auth/barber/logout", { method: "POST" });
     window.location.href = "/barber-login";
@@ -146,6 +161,15 @@ export default function BarberAgendaView({
                   <option key={s} value={s}>{STATUS_LABEL[s]}</option>
                 ))}
               </select>
+              {b.status === "RESERVADO" && (
+                <button
+                  onClick={() => sendWhatsApp(b.id)}
+                  title="Enviar WhatsApp de confirmación al cliente"
+                  className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500"
+                >
+                  📱 WhatsApp
+                </button>
+              )}
             </div>
           ))}
           {!loading && !bookings.length && (
