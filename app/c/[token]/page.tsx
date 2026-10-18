@@ -28,7 +28,7 @@ export default async function ConfirmClientPage({ params }: { params: Promise<{ 
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
           {cancelled
-            ? "Tu cita fue cancelada."
+            ? "¡Gracias por avisarnos! 🙏 El horario quedó libre. Vuelve luego 💈"
             : confirmed
               ? `Gracias, ${booking.client.name.split(" ")[0]}. Nos vemos pronto.`
               : `Hola ${booking.client.name.split(" ")[0]}, ¿todo listo para tu cita?`}

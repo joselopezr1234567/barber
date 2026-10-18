@@ -6,6 +6,7 @@ type Booking = {
   id: string;
   startMin: number;
   status: string;
+  reminderStatus?: string;
   service?: { name: string; priceMin?: number | null };
   client?: { name?: string; phone?: string } | null;
 };
@@ -14,6 +15,7 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const STATUS_LABEL: Record<string, string> = {
   RESERVADO: "Reservado",
+  CONFIRMADO: "Confirmado",
   ATENDIDO: "Atendido",
   CANCELADO: "Cancelado",
   NO_ASISTIO: "No asistió",
@@ -21,6 +23,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 const STATUS_CLS: Record<string, string> = {
   RESERVADO: "bg-blue-100 text-blue-700",
+  CONFIRMADO: "bg-green-100 text-green-700",
   ATENDIDO: "bg-emerald-100 text-emerald-700",
   CANCELADO: "bg-red-100 text-red-600",
   NO_ASISTIO: "bg-zinc-200 text-zinc-600",
@@ -131,8 +134,8 @@ export default function BarberAgendaView({
                   {b.client?.phone ? ` · ${b.client.phone}` : ""}
                 </p>
               </div>
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
-                {STATUS_LABEL[b.status] ?? b.status}
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
+                {STATUS_LABEL[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? b.status}
               </span>
               <select
                 value={b.status}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { minToLabel, prettyDate } from "@/lib/time";
 
 /**
  * Webhook de Twilio WhatsApp: recibe las respuestas de los botones Quick Reply
@@ -27,9 +28,14 @@ async function findActiveBooking(fromPhone: string) {
     return cp.endsWith(tail) || cp.endsWith(tail8) || tail.endsWith(cp.slice(-8));
   });
   if (!match) return null;
-  return prisma.booking.findFirst({
+  const b = await prisma.booking.findFirst({
     where: { clientId: match.id, status: "RESERVADO" },
     orderBy: { createdAt: "desc" },
+  });
+  if (!b) return null;
+  return prisma.booking.findUnique({
+    where: { id: b.id },
+    include: { client: true, service: true, barber: true, branch: true },
   });
 }
 
@@ -67,19 +73,38 @@ export async function POST(req: Request) {
   }
 
   if (cmd.includes("confirmar")) {
+    if (booking.reminderStatus === "CONFIRMADO") {
+      await reply(from, "✅ Tu cita ya estaba confirmada. ¡Nos vemos! 💈");
+      return NextResponse.json({ ok: true });
+    }
     await prisma.booking.update({ where: { id: booking.id }, data: { reminderStatus: "CONFIRMADO" } });
-    await reply(from, "✅ ¡Asistencia confirmada! Nos vemos en tu cita 💈");
+    const cuando = `${prettyDate(booking.date)} a las ${minToLabel(booking.startMin)}`;
+    await reply(
+      from,
+      `✅ ¡Gracias por confirmar, ${booking.client.name.split(" ")[0]}!
+
+Tu cita quedó confirmada:
+💈 ${booking.branch.name}
+✂️ ${booking.service.name}
+👨‍🔧 ${booking.barber?.name ?? "Por asignar"}
+📅 ${cuando}
+
+¡Te esperamos! 💈`
+    );
     return NextResponse.json({ ok: true });
   }
 
   if (cmd.includes("cancelar")) {
     await prisma.booking.update({ where: { id: booking.id }, data: { status: "CANCELADO" } });
-    await reply(from, "❌ Tu reserva fue cancelada. Puedes agendar una nueva cuando quieras.");
+    await reply(from, "¡Gracias por avisarnos! 🙏 Tu cita fue cancelada y el horario quedó libre. Vuelve cuando quieras 💈");
     return NextResponse.json({ ok: true });
   }
 
   if (cmd.includes("reprogramar")) {
-    await reply(from, `🔄 Para elegir nueva fecha y hora entra aquí:\n${baseUrl}/reservar?reprogramar=${booking.token}`);
+    await reply(
+      from,
+      `🔄 Para reprogramar tu cita, entra aquí y elige nuevo día y hora:\n${baseUrl}/reservar?reprogramar=${booking.token}`
+    );
     return NextResponse.json({ ok: true });
   }
 

@@ -10,5 +10,8 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
     return NextResponse.json({ error: "La reserva no puede cancelarse" }, { status: 409 });
   }
   await prisma.booking.update({ where: { token }, data: { status: "CANCELADO" } });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    message: "¡Gracias por avisarnos! 🙏 Tu cita fue cancelada y el horario quedó libre. Vuelve luego 💈",
+  });
 }

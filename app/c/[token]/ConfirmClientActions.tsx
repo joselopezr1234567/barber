@@ -9,6 +9,8 @@ export default function ConfirmClientActions({ token, confirmed }: { token: stri
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState<"confirm" | "cancel" | null>(null);
 
+  const [cancelMsg, setCancelMsg] = useState<string | null>(null);
+
   const confirm = async () => {
     setBusy("confirm");
     await fetch(`/api/public/bookings/${token}/confirm`, { method: "POST" });
@@ -18,13 +20,20 @@ export default function ConfirmClientActions({ token, confirmed }: { token: stri
 
   const cancel = async () => {
     setBusy("cancel");
-    await fetch(`/api/public/bookings/${token}/cancel`, { method: "POST" });
+    const res = await fetch(`/api/public/bookings/${token}/cancel`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    if (data?.message) setCancelMsg(data.message);
     router.refresh();
     setBusy(null);
   };
 
   return (
     <div className="mt-6 space-y-3">
+      {cancelMsg && (
+        <div className="rounded-xl border-zinc-700 bg-zinc-900 p-4 text-center text-sm text-zinc-300">
+          {cancelMsg}
+        </div>
+      )}
       {/* Confirmar asistencia */}
       {confirmed ? (
         <div className="rounded-xl border-emerald-800 bg-emerald-950/50 py-3 text-center text-sm font-semibold text-emerald-300">
