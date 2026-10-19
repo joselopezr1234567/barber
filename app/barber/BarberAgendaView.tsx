@@ -59,6 +59,24 @@ export default function BarberAgendaView({
 
   useEffect(() => { load(); }, [load]);
 
+  // Polling: refresca la agenda cada 30s para que el badge cambie solo
+  // cuando el cliente confirma desde su WhatsApp.
+  useEffect(() => {
+    const iv = setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 30_000);
+    return () => clearInterval(iv);
+  }, [load]);
+
+  // Refresca apenas se vuelve a la pestaña (p.ej. tras ver WhatsApp).
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [load]);
+
   const setStatus = async (bookingId: string, status: string) => {
     const res = await fetch("/api/barber/agenda", {
       method: "PATCH",
