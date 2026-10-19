@@ -102,8 +102,20 @@ export function buildReminderMessage(
   return `${base}*¿Confirmas tu asistencia hoy?*\n\nResponde con los botones de abajo:\n✅ Confirmar\n🔄 Reprogramar\n❌ Cancelar`;
 }
 
-async function sendWhatsApp(to: string, body: string, _urls?: unknown): Promise<boolean> {
+async function sendWhatsApp(
+  to: string,
+  body: string,
+  _urls?: unknown,
+  bookingId?: string
+): Promise<boolean> {
   if (!client) return false;
+
+  // Status callback: Twilio avisa a nuestro webhook cuando el mensaje
+  // pasa por sent / delivered / read.
+  const statusCallback =
+    bookingId && baseUrl
+      ? `${baseUrl}/api/whatsapp/status?bookingId=${encodeURIComponent(bookingId)}`
+      : undefined;
 
   // 1) Intentar con plantilla de botones Quick Reply
   const contentSid = await ensureButtonsContent();
@@ -114,6 +126,7 @@ async function sendWhatsApp(to: string, body: string, _urls?: unknown): Promise<
         to,
         contentSid,
         contentVariables: JSON.stringify({ 1: body }),
+        statusCallback,
       });
       return true;
     } catch (e) {
@@ -123,7 +136,7 @@ async function sendWhatsApp(to: string, body: string, _urls?: unknown): Promise<
 
   // 2) Fallback: texto plano con links
   try {
-    await client.messages.create({ from: fromNumber, to, body });
+    await client.messages.create({ from: fromNumber, to, body, statusCallback });
     return true;
   } catch (e) {
     console.error("[twilio] error enviando:", e);
@@ -155,7 +168,7 @@ export async function sendReminderForBooking(bookingId: string, type: "RECORDATO
     startMin: booking.startMin,
   });
 
-  const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token));
+  const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token), booking.id);
   await prisma.booking.update({
     where: { id: booking.id },
     data: {
@@ -226,7 +239,7 @@ export async function processReminders(): Promise<{ processed: number; sent: num
       startMin: booking.startMin,
     });
 
-    const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token));
+    const sent = await sendWhatsApp(toWhatsApp(booking.client.phone), body, links(booking.token), booking.id);
     await prisma.booking.update({
       where: { id: booking.id },
       data: { reminderStatus: sent ? "ENVIADO" : "FALLADO", reminderType: type },

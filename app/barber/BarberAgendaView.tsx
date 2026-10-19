@@ -19,14 +19,21 @@ const STATUS_LABEL: Record<string, string> = {
   ATENDIDO: "Atendido",
   CANCELADO: "Cancelado",
   NO_ASISTIO: "No asistió",
+  ENVIADO: "WA enviado",
+  ENTREGADO: "WA entregado",
+  LEIDO: "WA leído",
+  FALLADO: "WA falló",
 };
-
 const STATUS_CLS: Record<string, string> = {
   RESERVADO: "bg-blue-100 text-blue-700",
   CONFIRMADO: "bg-green-100 text-green-700",
   ATENDIDO: "bg-emerald-100 text-emerald-700",
   CANCELADO: "bg-red-100 text-red-600",
   NO_ASISTIO: "bg-zinc-200 text-zinc-600",
+  ENVIADO: "bg-amber-100 text-amber-700",
+  ENTREGADO: "bg-teal-100 text-teal-700",
+  LEIDO: "bg-sky-100 text-sky-700",
+  FALLADO: "bg-orange-100 text-orange-700",
 };
 
 function fmtTime(min: number) {
@@ -170,12 +177,22 @@ export default function BarberAgendaView({
               <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
                 {STATUS_LABEL[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? b.status}
               </span>
+              {b.status === "RESERVADO" &&
+                b.reminderStatus &&
+                ["ENVIADO", "ENTREGADO", "LEIDO"].includes(b.reminderStatus) && (
+                  <span
+                    title={`Estado del WhatsApp: ${STATUS_LABEL[b.reminderStatus]}`}
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.reminderStatus]}`}
+                  >
+                    {STATUS_LABEL[b.reminderStatus]}
+                  </span>
+                )}
               <select
                 value={b.status}
                 onChange={(e) => setStatus(b.id, e.target.value)}
                 className="rounded-lg border border-zinc-300 px-2 py-1.5 text-xs"
               >
-                {Object.keys(STATUS_LABEL).map((s) => (
+                {["RESERVADO", "ATENDIDO", "CANCELADO", "NO_ASISTIO"].map((s) => (
                   <option key={s} value={s}>{STATUS_LABEL[s]}</option>
                 ))}
               </select>
