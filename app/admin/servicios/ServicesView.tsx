@@ -73,8 +73,8 @@ export default function ServicesView() {
   };
 
   return (
-    <div className="min-w-[700px]">
-      <div className="flex items-center justify-between">
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Catálogo de servicios</h1>
           <p className="text-sm text-zinc-500">Nombre, duración y precio. Pausa los servicios que no ofreces ahora.</p>
@@ -84,7 +84,8 @@ export default function ServicesView() {
         </button>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-xl border-zinc-200 bg-white">
+      {/* Tabla en escritorio */}
+      <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
             <tr>
@@ -127,7 +128,33 @@ export default function ServicesView() {
         </table>
       </div>
 
-      {/* Modal editar/crear */}
+      {/* Tarjetas en móvil */}
+      <div className="mt-6 space-y-3 sm:hidden">
+        {services.map((s) => (
+          <div key={s.id} className="rounded-xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{s.name}</p>
+                {s.description && <p className="text-xs text-zinc-500">{s.description}</p>}
+              </div>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                s.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+              }`}>
+                {s.active ? "Activo" : "Pausado"}
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-zinc-600">{s.durationMin} min · <span className="font-semibold">{formatPrice(s.price)}</span></p>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
+              <button onClick={() => openEdit(s)} className="text-blue-600 hover:underline">Editar</button>
+              <button onClick={() => toggle(s)} className="text-zinc-500 hover:underline">{s.active ? "Pausar" : "Activar"}</button>
+              <button onClick={() => remove(s)} className="text-red-600 hover:underline">Eliminar</button>
+            </div>
+          </div>
+        ))}
+        {services.length === 0 && (
+          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">No hay servicios todavía.</p>
+        )}
+      </div>
       {(editing || creating) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => { setEditing(null); setCreating(false); }}>
           <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>

@@ -97,7 +97,7 @@ export default function ShiftsView() {
   };
 
   return (
-    <div className="min-w-[800px]">
+    <div className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Turnos de trabajo</h1>
@@ -105,7 +105,7 @@ export default function ShiftsView() {
             Configura los bloques de trabajo por día. Dos bloques el mismo día = jornada partida (ej. almuerzo entre medio).
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {branches.length > 1 && (
             <select
               value={branchId}

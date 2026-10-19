@@ -111,8 +111,8 @@ export default function WorkersView() {
     branches.find((x) => x.id === b.branchId)?.name ?? b.branch?.name ?? "—";
 
   return (
-    <div className="min-w-[700px]">
-      <div className="flex items-center justify-between">
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
           <p className="text-sm text-zinc-500">
@@ -129,7 +129,8 @@ export default function WorkersView() {
 
       {error && <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-zinc-200 bg-white">
+      {/* Tabla en escritorio */}
+      <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
             <tr>
@@ -171,6 +172,34 @@ export default function WorkersView() {
             {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      {/* Tarjetas en móvil */}
+      <div className="mt-6 space-y-3 sm:hidden">
+        {barbers.map((b) => (
+          <div key={b.id} className="rounded-xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{b.name}</p>
+                <p className="text-xs text-zinc-500">{branchName(b)}</p>
+              </div>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+              }`}>
+                {b.active ? "Activo" : "Inactivo"}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
+              <button onClick={() => openEdit(b)} className="text-blue-600 hover:underline">Editar</button>
+              <button onClick={() => toggleActive(b)} className="text-zinc-500 hover:underline">{b.active ? "Desactivar" : "Activar"}</button>
+              <button onClick={() => remove(b)} className="text-red-600 hover:underline">Eliminar</button>
+            </div>
+          </div>
+        ))}
+        {!loading && !barbers.length && (
+          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">No hay trabajadores aún. Crea el primero.</p>
+        )}
+        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">Cargando…</p>}
       </div>
 
       {/* Modal crear */}

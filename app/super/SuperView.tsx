@@ -171,15 +171,15 @@ export default function SuperView() {
     );
 
   return (
-    <div className="min-w-[800px]">
-      <div className="flex items-center justify-between">
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Logins de barberías</h1>
           <p className="text-sm text-zinc-500">
             Crea y administra las cuentas que usan las barberías para entrar a su panel.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => { setCreatingBranch(true); setBranchError(null); }}
             className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
@@ -195,7 +195,8 @@ export default function SuperView() {
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-xl border-zinc-200 bg-white">
+      {/* Tabla en escritorio */}
+      <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
             <tr>
@@ -252,6 +253,31 @@ export default function SuperView() {
             {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      {/* Tarjetas en móvil */}
+      <div className="mt-6 space-y-3 sm:hidden">
+        {accounts.map((a) => (
+          <div key={a.id} className="rounded-xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{a.name}</p>
+                <p className="text-xs text-zinc-500">{a.email}</p>
+                <p className="mt-1 text-xs text-zinc-500">Sucursales: {branchNames(a)}</p>
+              </div>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+              }`}>
+                {a.active ? "Activa" : "Desactivada"}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
+              <button onClick={() => openEdit(a)} className="text-blue-600 hover:underline">Editar</button>
+              <button onClick={() => toggleActive(a)} className="text-zinc-500 hover:underline">{a.active ? "Desactivar" : "Activar"}</button>
+            </div>
+          </div>
+        ))}
+        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">Cargando…</p>}
       </div>
 
       {/* Modal crear sucursal */}

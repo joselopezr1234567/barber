@@ -70,9 +70,9 @@ export default function ClientsView() {
   };
 
   return (
-    <div className="flex min-w-[800px] gap-6">
+    <div className="flex min-w-0 flex-col gap-6">
       {/* Lista */}
-      <div className={selected ? "w-80 shrink-0" : "w-full max-w-2xl"}>
+      <div className={selected ? "w-full md:w-80 md:shrink-0" : "w-full max-w-2xl"}>
         <h1 className="text-2xl font-bold">Clientes</h1>
         <p className="text-sm text-zinc-500">Ficha digital con historial de visitas y notas del barbero.</p>
         <input
@@ -105,7 +105,7 @@ export default function ClientsView() {
 
       {/* Ficha */}
       {selected && (
-        <div className="flex-1">
+        <div className="w-full md:flex-1">
           <div className="rounded-xl border-zinc-200 bg-white">
             <div className="flex items-start justify-between border-b border-zinc-200 px-5 py-4">
               <div>

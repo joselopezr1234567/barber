@@ -123,14 +123,14 @@ export default function AgendaView() {
   }, [date]);
 
   return (
-    <div className="min-w-[900px]">
+    <div className="min-w-0">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Agenda</h1>
           <p className="text-sm capitalize text-zinc-500">{dayLabel}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={branchId ?? ""}
             onChange={(e) => setBranchId(e.target.value)}
@@ -138,7 +138,7 @@ export default function AgendaView() {
           >
             {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
-          <div className="flex items-center rounded-lg border-zinc-300 bg-white">
+          <div className="flex items-center rounded-lg border border-zinc-300 bg-white">
             <button onClick={() => setDate(addDaysStr(date, -1))} className="px-3 py-2 text-sm hover:bg-zinc-50">◀</button>
             <button onClick={() => setDate(todayStr())} className="border-x border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50">Hoy</button>
             <button onClick={() => setDate(addDaysStr(date, 1))} className="px-3 py-2 text-sm hover:bg-zinc-50">▶</button>
@@ -147,7 +147,7 @@ export default function AgendaView() {
             type="date"
             value={date}
             onChange={(e) => e.target.value && setDate(e.target.value)}
-            className="rounded-lg border-zinc-300 bg-white px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded-lg border-zinc-300 bg-white px-3 py-2 text-sm sm:flex-none"
           />
         </div>
       </div>
@@ -161,8 +161,8 @@ export default function AgendaView() {
         ))}
       </div>
 
-      {/* Columnas por barbero */}
-      <div className="mt-4 grid grid-flow-col auto-cols-[minmax(240px,1fr)] gap-4 overflow-x-auto pb-4">
+      {/* Columnas por barbero: fila con scroll en móvil, grid en escritorio */}
+      <div className="no-scrollbar mt-4 flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-3 xl:grid-cols-4">
         {barbers.map((barber) => {
           const list = bookings.filter((b) => b.barberId === barber.id);
           const barberBlocks = blocks.filter((b) => b.barberId === barber.id);
@@ -171,7 +171,7 @@ export default function AgendaView() {
             ? barberShifts.map((s) => `${minToLabel(s.startMin)}–${minToLabel(s.endMin)}`).join(" · ")
             : "Libre";
           return (
-            <div key={barber.id} className="rounded-xl border-zinc-200 bg-white">
+            <div key={barber.id} className="w-72 shrink-0 rounded-xl border-zinc-200 bg-white md:w-auto">
               <div className="border-b border-zinc-200 px-4 py-3">
                 <p className="font-semibold">{barber.name}</p>
                 <p className="text-xs text-zinc-500">Turno: {shiftLabel}</p>
