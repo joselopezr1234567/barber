@@ -15,7 +15,12 @@ function digits(s: string): string {
   return s.replace(/\D/g, "");
 }
 
-/** Busca la reserva activa más reciente del teléfono que responde. */
+/**
+ * Busca la reserva activa más reciente del teléfono que responde.
+ * Puede haber clientes duplicados con el mismo número en formatos distintos
+ * ("945099183", "+56945099183", ...), así que se evalúan TODOS los matcheos
+ * y se devuelve la reserva activa más reciente entre todos.
+ */
 async function findActiveBooking(fromPhone: string) {
   const d = digits(fromPhone);
   const tail = d.slice(-9); // últimos 9 dígitos ej: 945099183
@@ -23,13 +28,15 @@ async function findActiveBooking(fromPhone: string) {
   const clients = await prisma.client.findMany({
     where: { phone: { not: "" } },
   });
-  const match = clients.find((c) => {
-    const cp = digits(c.phone);
-    return cp.endsWith(tail) || cp.endsWith(tail8) || tail.endsWith(cp.slice(-8));
-  });
-  if (!match) return null;
+  const matchedIds = clients
+    .filter((c) => {
+      const cp = digits(c.phone);
+      return cp.endsWith(tail) || cp.endsWith(tail8) || tail.endsWith(cp.slice(-8));
+    })
+    .map((c) => c.id);
+  if (!matchedIds.length) return null;
   const b = await prisma.booking.findFirst({
-    where: { clientId: match.id, status: "RESERVADO" },
+    where: { clientId: { in: matchedIds }, status: "RESERVADO" },
     orderBy: { createdAt: "desc" },
   });
   if (!b) return null;
@@ -39,11 +46,15 @@ async function findActiveBooking(fromPhone: string) {
   });
 }
 
-async function reply(to: string, body: string) {
+async function reply(rawTo: string, body: string) {
   const twilio = (await import("twilio")).default;
   const sid = process.env.TWILIO_ACCOUNT_SID!;
   const token = process.env.TWILIO_AUTH_TOKEN!;
   const from = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
+  // Twilio a veces manda "From" con espacios ("whatsapp: 56945099183"):
+  // se normaliza a whatsapp:+XXXXXXXX antes de responder.
+  const digitsOnly = rawTo.replace(/\D/g, "");
+  const to = `whatsapp:+${digitsOnly}`;
   const client = twilio(sid, token);
   try {
     await client.messages.create({ from, to, body });
