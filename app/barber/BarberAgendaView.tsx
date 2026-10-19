@@ -125,34 +125,34 @@ export default function BarberAgendaView({
 
   return (
     <div className="min-h-dvh bg-zinc-100">
-      <header className="bg-zinc-900 px-6 py-4 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-zinc-400">{branchName}</p>
-            <h1 className="text-xl font-bold">Mi agenda — {barberName}</h1>
+      <header className="bg-zinc-900 px-4 py-4 text-white sm:px-6">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-xs uppercase tracking-wide text-zinc-400">{branchName}</p>
+            <h1 className="truncate text-lg font-bold sm:text-xl">Mi agenda — {barberName}</h1>
           </div>
           <button
             onClick={logout}
-            className="rounded-lg border border-zinc-600 px-3 py-1.5 text-xs hover:bg-zinc-800"
+            className="shrink-0 rounded-lg border border-zinc-600 px-3 py-1.5 text-xs hover:bg-zinc-800"
           >
             Cerrar sesión
           </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-6">
+      <main className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-4">
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm sm:flex-none"
           />
           <span className="text-sm text-zinc-500">
             {loading ? "Cargando…" : `${total} cita${total === 1 ? "" : "s"}`}
           </span>
           {ingresos > 0 && (
-            <span className="ml-auto rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
+            <span className="w-full rounded-full bg-emerald-100 px-3 py-1 text-center text-sm font-semibold text-emerald-700 sm:ml-auto sm:w-auto">
               Ingresos del día: ${ingresos.toLocaleString()}
             </span>
           )}
@@ -162,49 +162,54 @@ export default function BarberAgendaView({
           {bookings.map((b) => (
             <div
               key={b.id}
-              className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm"
+              className="rounded-xl bg-white p-4 shadow-sm"
             >
-              <div className="w-16 text-center">
-                <p className="text-lg font-bold">{fmtTime(b.startMin)}</p>
+              <div className="flex items-center gap-4">
+                <div className="w-16 shrink-0 text-center">
+                  <p className="text-lg font-bold">{fmtTime(b.startMin)}</p>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{b.client?.name ?? "Cliente"}</p>
+                  <p className="truncate text-sm text-zinc-500">
+                    {b.service?.name ?? "Servicio"}
+                    {b.client?.phone ? ` · ${b.client.phone}` : ""}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{b.client?.name ?? "Cliente"}</p>
-                <p className="truncate text-sm text-zinc-500">
-                  {b.service?.name ?? "Servicio"}
-                  {b.client?.phone ? ` · ${b.client.phone}` : ""}
-                </p>
-              </div>
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
-                {STATUS_LABEL[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? b.status}
-              </span>
-              {b.status === "RESERVADO" &&
-                b.reminderStatus &&
-                ["ENVIADO", "ENTREGADO", "LEIDO"].includes(b.reminderStatus) && (
-                  <span
-                    title={`Estado del WhatsApp: ${STATUS_LABEL[b.reminderStatus]}`}
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.reminderStatus]}`}
-                  >
-                    {STATUS_LABEL[b.reminderStatus]}
-                  </span>
-                )}
-              <select
-                value={b.status}
-                onChange={(e) => setStatus(b.id, e.target.value)}
-                className="rounded-lg border border-zinc-300 px-2 py-1.5 text-xs"
-              >
-                {["RESERVADO", "ATENDIDO", "CANCELADO", "NO_ASISTIO"].map((s) => (
-                  <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-                ))}
-              </select>
-              {b.status === "RESERVADO" && (
-                <button
-                  onClick={() => sendWhatsApp(b.id)}
-                  title="Enviar WhatsApp de confirmación al cliente"
-                  className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500"
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
+                  {STATUS_LABEL[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? b.status}
+                </span>
+                {b.status === "RESERVADO" &&
+                  b.reminderStatus &&
+                  ["ENVIADO", "ENTREGADO", "LEIDO"].includes(b.reminderStatus) && (
+                    <span
+                      title={`Estado del WhatsApp: ${STATUS_LABEL[b.reminderStatus]}`}
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.reminderStatus]}`}
+                    >
+                      {STATUS_LABEL[b.reminderStatus]}
+                    </span>
+                  )}
+                <select
+                  value={b.status}
+                  onChange={(e) => setStatus(b.id, e.target.value)}
+                  className="ml-auto rounded-lg border border-zinc-300 px-2 py-1.5 text-xs"
                 >
-                  📱 WhatsApp
-                </button>
-              )}
+                  {["RESERVADO", "ATENDIDO", "CANCELADO", "NO_ASISTIO"].map((s) => (
+                    <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                  ))}
+                </select>
+                {b.status === "RESERVADO" && (
+                  <button
+                    onClick={() => sendWhatsApp(b.id)}
+                    title="Enviar WhatsApp de confirmación al cliente"
+                    className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500"
+                  >
+                    📱 WhatsApp
+                  </button>
+                )}
+              </div>
             </div>
           ))}
           {!loading && !bookings.length && (
