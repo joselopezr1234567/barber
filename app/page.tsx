@@ -19,12 +19,6 @@ export default function Home() {
         >
           Reservar una cita
         </Link>
-        <Link
-          href="/admin"
-          className="rounded-xl border border-zinc-700 px-6 py-3.5 text-center font-medium text-zinc-300 transition hover:border-zinc-500 hover:text-zinc-100"
-        >
-          Panel del barbero
-        </Link>
       </div>
     </main>
   );
