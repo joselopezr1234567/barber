@@ -1,8 +1,10 @@
 import Link from "next/link";
+import HomePromos from "./HomePromos";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center">
+    <main className="relative flex min-h-screen flex-col items-center justify-center gap-8 px-6 pb-20 text-center">
+      <HomePromos />
       <div>
         <p className="text-4xl">📅</p>
         <h1 className="mt-4 text-3xl font-bold sm:text-4xl">
