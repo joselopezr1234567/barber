@@ -35,6 +35,13 @@ model Branch {
   // Rubro del negocio: BARBERIA, PELUQUERIA, CENTRO_MEDICO, PILATES, etc.
   // Ver lib/verticals.ts para la lista completa.
   vertical String @default("BARBERIA")
+  // Branding: logo e imagen de fondo que se muestran en el sitio público.
+  // Guardamos la ruta del archivo servido (ej: "/api/branding/<branchId>/logo"), no el binario en la BD.
+  logoUrl  String?
+  coverUrl String?
+  // Texto publicitario que aparece debajo del botón principal de reserva.
+  promoText    String?
+  promoLinkUrl String?
   active  Boolean  @default(true)
   barbers Barber[]
   services Service[]

@@ -5,7 +5,11 @@ export async function GET() {
   const branches = await prisma.branch.findMany({
       where: { active: true },
       orderBy: { name: "asc" },
-      include: { barbers: { where: { active: true }, orderBy: { name: "asc" } } },
+      select: {
+        id: true, name: true, address: true, phone: true,
+        logoUrl: true, coverUrl: true, promoText: true, promoLinkUrl: true,
+        barbers: { where: { active: true }, orderBy: { name: "asc" }, select: { id: true, name: true, branchId: true } },
+      },
     });
   const services = await prisma.service.findMany({
     where: { active: true },

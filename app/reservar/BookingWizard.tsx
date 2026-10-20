@@ -6,7 +6,11 @@ import {
   addDaysStr, formatPrice, minToLabel, prettyDate, todayStr, WEEKDAYS_SHORT, fromDateStr,
 } from "@/lib/time";
 
-type Branch = { id: string; name: string; address: string; phone: string };
+type Branch = {
+  id: string; name: string; address: string; phone: string;
+  logoUrl?: string | null; coverUrl?: string | null;
+  promoText?: string | null; promoLinkUrl?: string | null;
+};
 type Barber = { id: string; name: string; branchId: string };
 type Service = { id: string; name: string; description: string | null; durationMin: number; price: number };
 type Slot = { startMin: number; label: string; barberIds: string[] };
@@ -149,6 +153,20 @@ export default function BookingWizard() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
+      {/* Cover personalizado del negocio */}
+      {branch?.coverUrl && (
+        <div className="relative mb-4 h-28 overflow-hidden rounded-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={branch.coverUrl} alt={branch.name} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent" />
+          {branch.logoUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={branch.logoUrl} alt="Logo" className="absolute bottom-2 left-3 h-10 w-10 rounded-lg border border-white/20 bg-zinc-950/60 object-contain p-1" />
+          )}
+          <p className="absolute bottom-3 left-16 font-semibold text-white drop-shadow">{branch.name}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <button onClick={() => (step > 0 ? setStep(step - 1) : router.push("/"))} className="text-sm text-zinc-400 hover:text-zinc-200">
@@ -192,7 +210,13 @@ export default function BookingWizard() {
                     : "border-zinc-800 bg-zinc-900 hover:border-zinc-600"
                 }`}
               >
-                <p className="font-semibold">{b.name}</p>
+                <div className="flex items-center gap-3">
+                  {b.logoUrl && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={b.logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-lg border border-zinc-700 bg-zinc-950 object-contain p-0.5" />
+                  )}
+                  <p className="font-semibold">{b.name}</p>
+                </div>
                 <p className="mt-0.5 text-sm text-zinc-400">{b.address}</p>
                 <p className="text-sm text-zinc-500">{b.phone}</p>
               </button>
@@ -374,7 +398,8 @@ export default function BookingWizard() {
 
       {/* Barra inferior fija */}
       <div className="fixed inset-x-0 bottom-0 border-t border-zinc-800 bg-zinc-950/90 p-4 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-md items-center gap-3">
+        <div className="mx-auto w-full max-w-md">
+          <div className="flex items-center gap-3">
           {step === 3 ? (
             <button
               onClick={submit}
@@ -391,6 +416,22 @@ export default function BookingWizard() {
             >
               Continuar
             </button>
+          )}
+          </div>
+          {/* Propaganda del negocio, debajo del botón */}
+          {branch?.promoText && (
+            <a
+              href={branch.promoLinkUrl || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block rounded-xl border border-gold-500/40 bg-gold-500/10 px-3 py-2 text-center text-xs font-medium text-gold-300 transition hover:bg-gold-500/20"
+            >
+              {branch.logoUrl && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={branch.logoUrl} alt="" className="mr-1.5 inline-block h-4 w-4 rounded align-middle object-contain" />
+              )}
+              {branch.promoText}
+            </a>
           )}
         </div>
       </div>
