@@ -36,9 +36,15 @@ model Branch {
   // Ver lib/verticals.ts para la lista completa.
   vertical String @default("BARBERIA")
   // Branding: logo e imagen de fondo que se muestran en el sitio público.
-  // Guardamos la ruta del archivo servido (ej: "/api/branding/<branchId>/logo"), no el binario en la BD.
+  // La ruta pública servida (ej: "/api/public/branding/<id>/logo").
   logoUrl  String?
   coverUrl String?
+  // Binario de la imagen guardado en la BD (sobrevive a deploys, porque
+  // la carpeta public/ se congela con el build en producción).
+  logoData  Bytes?
+  logoMime  String?
+  coverData Bytes?
+  coverMime String?
   // Texto publicitario que aparece debajo del botón principal de reserva.
   promoText    String?
   promoLinkUrl String?

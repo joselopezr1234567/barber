@@ -8,6 +8,8 @@ type Branch = {
   address: string;
   logoUrl: string | null;
   coverUrl: string | null;
+  logoData?: unknown;
+  coverData?: unknown;
   promoText: string | null;
   promoLinkUrl: string | null;
 };

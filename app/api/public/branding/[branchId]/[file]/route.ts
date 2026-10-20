@@ -27,6 +27,21 @@ export async function GET(
   const url = file === "logo" ? branch.logoUrl : branch.coverUrl;
   if (!url) return new NextResponse("Not found", { status: 404 });
 
+  // Binario servido desde la BD (sobrevive a deploys, la carpeta public/ se
+  // congela con el build en producción).
+  const data = file === "logo" ? branch.logoData : branch.coverData;
+  const mime = (file === "logo" ? branch.logoMime : branch.coverMime) ?? "image/png";
+  if (data) {
+    return new NextResponse(new Uint8Array(data), {
+      headers: {
+        "Content-Type": mime,
+        "Cache-Control": "public, max-age=60", // corto: permite ver el cambio al re-subir
+      },
+    });
+  }
+
+  // Fallback: archivo en disco (solo funciona en dev o si el archivo
+  // quedó incluido en el build).
   const path = await import("node:path");
   const { readFile } = await import("node:fs/promises");
   const full = path.join(process.cwd(), "public", url.replace(/^\//, ""));
@@ -83,10 +98,24 @@ export async function POST(
   const path = await import("node:path");
   const { mkdir, writeFile } = await import("node:fs/promises");
   const ext = f.type === "image/png" ? "png" : f.type === "image/webp" ? "webp" : "jpg";
+  const bytes = Buffer.from(await f.arrayBuffer());
+
+  // Guardar en la BD (fuente de verdad en producción).
+  const dataField = file === "logo" ? "logoData" : "coverData";
+  const mimeField = file === "logo" ? "logoMime" : "coverMime";
+  await prisma.branch.update({
+    where: { id: branchId },
+    data: { [dataField]: bytes, [mimeField]: f.type },
+  });
+
+  // Copia en disco para dev/local (opcional, no se usa en producción).
   const dir = path.join(process.cwd(), "public", "branding", branchId);
-  await mkdir(dir, { recursive: true });
-  const name = `${file}.${ext}`;
-  await writeFile(path.join(dir, name), Buffer.from(await f.arrayBuffer()));
+  try {
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, `${file}.${ext}`), bytes);
+  } catch {
+    // En producción el FS puede ser read-only; no es un error.
+  }
 
   const publicUrl = `/api/public/branding/${branchId}/${file}`;
   await prisma.branch.update({
