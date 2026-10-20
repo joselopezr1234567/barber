@@ -133,9 +133,9 @@ export default function BarberAgendaView({
           </div>
           <button
             onClick={logout}
-            className="shrink-0 rounded-lg border border-zinc-600 px-3 py-1.5 text-xs hover:bg-zinc-800"
+            className="shrink-0 whitespace-nowrap rounded-lg border border-zinc-600 px-3 py-1.5 text-xs hover:bg-zinc-800"
           >
-            Cerrar sesión
+            ⏻ Salir
           </button>
         </div>
       </header>

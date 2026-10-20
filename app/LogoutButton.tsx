@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LogoutButton({ label = "⏻ Cerrar sesión" }: { label?: string }) {
+export default function LogoutButton({
+  label = "⏻ Cerrar sesión",
+  redirectTo = "/login",
+}: {
+  label?: string;
+  redirectTo?: string;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -12,7 +18,7 @@ export default function LogoutButton({ label = "⏻ Cerrar sesión" }: { label?:
       onClick={async () => {
         setLoading(true);
         await fetch("/api/auth/logout", { method: "POST" });
-        router.push("/login");
+        router.push(redirectTo);
         router.refresh();
       }}
       disabled={loading}

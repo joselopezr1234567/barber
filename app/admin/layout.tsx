@@ -45,15 +45,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Barra superior: solo móvil */}
       <header className="sticky top-0 z-40 flex items-center gap-2 overflow-x-auto bg-zinc-900 px-3 py-2.5 md:hidden">
         <span className="mr-1 shrink-0 text-lg font-bold text-white">💈</span>
-        {NAV.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="shrink-0 whitespace-nowrap rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 active:bg-zinc-700"
-          >
-            {item.icon} {item.label}
-          </Link>
-        ))}
+        <div className="flex flex-1 items-center gap-2 overflow-x-auto">
+          {NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="shrink-0 whitespace-nowrap rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 active:bg-zinc-700"
+            >
+              {item.icon} {item.label}
+            </Link>
+          ))}
+        </div>
+        <span className="shrink-0">
+          <LogoutButton label="⏻ Salir" redirectTo="/login" />
+        </span>
       </header>
 
       <main className="p-4 md:ml-52 md:p-6">{children}</main>
