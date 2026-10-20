@@ -5,7 +5,7 @@ import BarberAgendaView from "./BarberAgendaView";
 
 export default async function BarberPage() {
   const session = await getBarberSession();
-  if (!session) redirect("/barber-login");
+  if (!session) redirect("/login");
 
   const barber = await prisma.barber.findUnique({
     where: { id: session.id },

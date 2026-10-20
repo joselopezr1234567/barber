@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { RUBRO_OPTIONS, termsFor } from "@/lib/verticals";
 
 type BranchRef = { id: string; name: string };
 type BranchFull = { id: string; name: string; address: string | null; ownerName: string | null; ownerEmail: string | null };
@@ -28,7 +29,7 @@ export default function SuperView() {
 
   // Nueva sucursal
   const [creatingBranch, setCreatingBranch] = useState(false);
-  const [branchForm, setBranchForm] = useState({ name: "", address: "", phone: "", ownerEmail: "", ownerPassword: "" });
+  const [branchForm, setBranchForm] = useState({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "" });
   const [savingBranch, setSavingBranch] = useState(false);
   const [branchError, setBranchError] = useState<string | null>(null);
 
@@ -60,7 +61,7 @@ export default function SuperView() {
     const r = await fetch("/api/super/branches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, phone: branchForm.phone, accountId }),
+      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, phone: branchForm.phone, vertical: branchForm.vertical, accountId }),
     });
     const data = await r.json();
     setSavingBranch(false);
@@ -69,7 +70,7 @@ export default function SuperView() {
       return;
     }
     setCreatingBranch(false);
-    setBranchForm({ name: "", address: "", phone: "", ownerEmail: "", ownerPassword: "" });
+    setBranchForm({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "" });
     load();
   };
   const [editName, setEditName] = useState("");
@@ -283,10 +284,17 @@ export default function SuperView() {
       {/* Modal crear sucursal */}
       {creatingBranch && (
         <Modal onClose={() => setCreatingBranch(false)}>
-          <h3 className="font-semibold">Nueva barbería</h3>
+          <h3 className="font-semibold">Nuevo negocio</h3>
           <p className="mt-0.5 text-xs text-zinc-500">Se crea la sucursal y opcionalmente su login para /admin.</p>
           <div className="mt-4 space-y-3">
-            <Field label="Nombre de la barbería / sucursal">
+            <Field label="Rubro del negocio">
+              <select value={branchForm.vertical} onChange={(e) => setBranchForm({ ...branchForm, vertical: e.target.value })} className={inputCls}>
+                {RUBRO_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Nombre del negocio / sucursal">
               <input value={branchForm.name} onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })} className={inputCls} placeholder="Barbería El Estilo" />
             </Field>
             <Field label="Dirección (opcional)">
@@ -308,7 +316,7 @@ export default function SuperView() {
           {branchError && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{branchError}</p>}
           <div className="mt-5 flex gap-2">
             <button onClick={createBranch} disabled={savingBranch} className="flex-1 rounded-lg bg-violet-600 py-2 text-sm font-semibold text-white disabled:opacity-40">
-              {savingBranch ? "Creando…" : "Crear barbería"}
+              {savingBranch ? "Creando…" : "Crear negocio"}
             </button>
             <button onClick={() => setCreatingBranch(false)} className="rounded-lg border-zinc-300 px-4 py-2 text-sm">Cancelar</button>
           </div>

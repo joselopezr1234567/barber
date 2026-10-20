@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { RUBRO_OPTIONS } from "@/lib/verticals";
 
 /** Lista todas las sucursales (super admin). */
 export async function GET() {
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (!account || account.role !== "PLATFORM_ADMIN") {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const { name, address, phone, accountId } = await req.json();
+  const { name, address, phone, accountId, vertical } = await req.json();
   if (!name || !name.trim()) {
     return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 });
   }
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
         name: name.trim(),
         address: address?.trim() || "",
         phone: phone.trim(),
+        vertical: typeof vertical === "string" && vertical ? vertical : "BARBERIA",
         accountId: accountId || null,
       },
     });

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+/** Login único para dueño del local, super admin y trabajadores. */
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -34,7 +35,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
         <h1 className="text-xl font-bold">Iniciar sesión</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Panel para barberías y administración de la plataforma.
+          Panel para barberías, peluquerías, centros médicos y más.
         </p>
 
         <form onSubmit={submit} className="mt-5 space-y-4">
@@ -78,12 +79,6 @@ export default function LoginPage() {
           ¿Cliente? Reserva sin cuenta en{" "}
           <a href="/reservar" className="underline hover:text-zinc-600">
             /reservar
-          </a>
-        </p>
-        <p className="mt-2 text-center text-xs text-zinc-400">
-          ¿Barbero?{" "}
-          <a href="/barber-login" className="underline hover:text-zinc-600">
-            Ingresa con tu correo y contraseña aquí
           </a>
         </p>
       </div>

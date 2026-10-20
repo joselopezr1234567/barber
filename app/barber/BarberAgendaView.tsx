@@ -115,7 +115,7 @@ export default function BarberAgendaView({
 
   const logout = async () => {
     await fetch("/api/auth/barber/logout", { method: "POST" });
-    window.location.href = "/barber-login";
+    window.location.href = "/login";
   };
 
   const total = bookings.length;

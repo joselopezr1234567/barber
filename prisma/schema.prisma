@@ -32,6 +32,9 @@ model Branch {
   name    String
   address String
   phone   String
+  // Rubro del negocio: BARBERIA, PELUQUERIA, CENTRO_MEDICO, PILATES, etc.
+  // Ver lib/verticals.ts para la lista completa.
+  vertical String @default("BARBERIA")
   active  Boolean  @default(true)
   barbers Barber[]
   services Service[]
