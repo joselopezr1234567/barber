@@ -41,6 +41,7 @@ export default function BookingWizard() {
   const [form, setForm] = useState({ name: "", phone: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [favs, setFavs] = useState<string[]>([]);
 
   const branchBarbers = useMemo(
     () => barbers.filter((b) => b.branchId === branchId),
@@ -54,6 +55,27 @@ export default function BookingWizard() {
     const t = todayStr();
     return Array.from({ length: 14 }, (_, i) => addDaysStr(t, i));
   }, []);
+
+  // Cargar favoritos de localStorage al montar
+  useEffect(() => {
+    try {
+      setFavs(JSON.parse(localStorage.getItem("barberiaFavs") ?? "[]"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const toggleFav = (id: string) => {
+    setFavs((prev) => {
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
+      try {
+        localStorage.setItem("barberiaFavs", JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   // Bootstrap
   useEffect(() => {
@@ -76,12 +98,19 @@ export default function BookingWizard() {
         } else {
           setError("No encontramos la reserva a reprogramar");
         }
+      } else if (searchParams.get("branch")) {
+        // Propaganda clickeada: ir directo a la agenda de esa empresa
+        const bid = searchParams.get("branch")!;
+        if (data.branches.some((b: Branch) => b.id === bid)) {
+          setBranchId(bid);
+          setStep(1);
+        }
       } else if (data.branches.length === 1) {
         setBranchId(data.branches[0].id);
       }
       setLoading(false);
     })();
-  }, [rescheduleToken]);
+  }, [rescheduleToken, searchParams]);
 
   // Cargar disponibilidad cuando cambia día/barbero (o servicio en modo reprogramar)
   const loadSlots = useCallback(async () => {
@@ -104,11 +133,30 @@ export default function BookingWizard() {
   }, [step, loadSlots]);
 
   const [branchSearch, setBranchSearch] = useState("");
-  const filteredBranches = branches.filter(
-    (b) =>
-      b.name.toLowerCase().includes(branchSearch.trim().toLowerCase()) ||
-      b.address.toLowerCase().includes(branchSearch.trim().toLowerCase())
+  const filteredBranches = branches
+    .filter(
+      (b) =>
+        b.name.toLowerCase().includes(branchSearch.trim().toLowerCase()) ||
+        b.address.toLowerCase().includes(branchSearch.trim().toLowerCase())
+    )
+    // Favoritos primero (orden estable dentro de cada grupo)
+    .sort((a, b) => Number(favs.includes(b.id)) - Number(favs.includes(a.id)));
+
+  // Promociones con imagen para el banner grande (solo empresas con promoText)
+  const promos = useMemo(
+    () => branches.filter((b) => b.promoText && (b.coverUrl || b.logoUrl)),
+    [branches]
   );
+  const [promoIndex, setPromoIndex] = useState(0);
+  useEffect(() => {
+    if (promos.length <= 1) return;
+    // Orden de rotación al azar, cambia cada 5 segundos
+    const order = promos.map((_, i) => i).sort(() => Math.random() - 0.5);
+    const iv = setInterval(() => {
+      setPromoIndex((p) => (p + 1) % promos.length);
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [promos]);
 
   const submit = async () => {
     if (!branchId || !serviceId || startMin === null) return;
@@ -187,6 +235,59 @@ export default function BookingWizard() {
         ))}
       </ol>
 
+      {/* Propaganda en grande: banner a todo el ancho con imagen de fondo, rota al azar */}
+      {step === 0 && promos.length > 0 && (
+        <a
+          href={`/reservar?branch=${promos[promoIndex].id}`}
+          className="relative -mx-4 mb-5 block h-40 w-[100vw] max-w-[100vw] self-center overflow-hidden sm:h-48"
+          style={{
+            marginLeft: "calc(50% - 50vw)",
+            marginRight: "calc(50% - 50vw)",
+            width: "100vw",
+          }}
+          key={promos[promoIndex].id}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={promos[promoIndex].coverUrl ?? promos[promoIndex].logoUrl ?? ""}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/30" />
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+            <div className="flex items-center gap-3">
+              {promos[promoIndex].logoUrl && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={promos[promoIndex].logoUrl}
+                  alt=""
+                  className="h-10 w-10 rounded-lg border border-white/20 object-contain"
+                />
+              )}
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gold-400">Promoción · {promos[promoIndex].name}</p>
+                <p className="mt-0.5 text-base font-bold text-white drop-shadow sm:text-lg">
+                  {promos[promoIndex].promoText}
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-lg bg-gold-500 px-3 py-1.5 text-xs font-bold text-zinc-950">
+              Agendar →
+            </span>
+          </div>
+          {promos.length > 1 && (
+            <div className="absolute right-4 top-3 flex gap-1">
+              {promos.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 w-1.5 rounded-full ${i === promoIndex ? "bg-gold-400" : "bg-white/40"}`}
+                />
+              ))}
+            </div>
+          )}
+        </a>
+      )}
+
       {/* Paso 1: Sucursal */}
       {step === 0 && (
         <section className="animate-fade-up">
@@ -216,6 +317,20 @@ export default function BookingWizard() {
                     <img src={b.logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-lg border border-zinc-700 bg-zinc-950 object-contain p-0.5" />
                   )}
                   <p className="font-semibold">{b.name}</p>
+                  {/* Estrella favorito */}
+                  <span
+                    role="button"
+                    aria-label={favs.includes(b.id) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFav(b.id);
+                    }}
+                    className={`ml-auto shrink-0 text-lg transition ${
+                      favs.includes(b.id) ? "text-gold-400" : "text-zinc-600 hover:text-gold-300"
+                    }`}
+                  >
+                    {favs.includes(b.id) ? "★" : "☆"}
+                  </span>
                 </div>
                 <p className="mt-0.5 text-sm text-zinc-400">{b.address}</p>
                 <p className="text-sm text-zinc-500">{b.phone}</p>
