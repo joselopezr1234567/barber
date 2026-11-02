@@ -1,20 +1,24 @@
 # --- Fase de construcción ---
-    FROM node:20-alpine AS builder
+    # Debian (glibc) en vez de Alpine: el motor nativo de Prisma/SQLite
+    # puede provocar segfaults (exit 139) sobre musl en Alpine.
+    FROM node:20-slim AS builder
     WORKDIR /app
-    
-    RUN apk add --no-cache libc6-compat
-    
+
+    RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
     COPY package*.json ./
     RUN npm ci
-    
+
     COPY . .
-    
+
     RUN npx prisma generate
     RUN npm run build
-    
+
     # --- Fase de producción ---
-    FROM node:20-alpine AS runner
+    FROM node:20-slim AS runner
     WORKDIR /app
+
+    RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
     
     ENV NODE_ENV=production
     ENV NEXT_TELEMETRY_DISABLED=1

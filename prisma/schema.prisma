@@ -1,5 +1,8 @@
 generator client {
   provider = "prisma-client-js"
+  // Motor binario correcto para Debian (glibc) en producción;
+  // en macOS local Prisma detecta el binario correcto automáticamente.
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
