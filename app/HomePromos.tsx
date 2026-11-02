@@ -51,6 +51,14 @@ export default function HomePromos() {
 
   return (
     <>
+      {/* Botón pequeño de login, esquina superior derecha */}
+      <Link
+        href="/login"
+        className="fixed right-3 top-3 z-20 rounded-full border border-gold-500/40 bg-zinc-950/70 px-3 py-1 text-xs font-semibold text-gold-300 backdrop-blur transition hover:bg-gold-500 hover:text-zinc-950"
+      >
+        Login
+      </Link>
+
       {/* Fondo con imagen rotando */}
       {current && (
         <div className="fixed inset-0 -z-10 overflow-hidden">
