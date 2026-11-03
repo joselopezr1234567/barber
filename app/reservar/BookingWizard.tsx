@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   addDaysStr, formatPrice, minToLabel, prettyDate, todayStr, WEEKDAYS_SHORT, fromDateStr,
@@ -548,8 +548,83 @@ export default function BookingWizard() {
               {branch.promoText}
             </a>
           )}
+          {/* Invitación a instalar la app */}
+          <InstallNudge />
         </div>
       </div>
     </main>
+  );
+}
+
+/**
+ * Aviso discreto bajo el botón de confirmar: invita a instalar ProAgenda.
+ * iOS → instrucciones; Android/Chrome → botón de instalación nativa.
+ * No aparece si ya está instalada o si el usuario lo cerró.
+ */
+function InstallNudge() {
+  const [visible, setVisible] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const deferredRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (localStorage.getItem("pwa-dismissed-reservar")) return;
+
+    const ua = window.navigator.userAgent;
+    const ios = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+    setIsIOS(ios);
+
+    const onPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredRef.current = e;
+      setVisible(true);
+    };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    if (ios) setVisible(true);
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
+
+  if (!visible) return null;
+
+  const dismiss = () => {
+    setVisible(false);
+    localStorage.setItem("pwa-dismissed-reservar", "1");
+  };
+
+  const install = async () => {
+    if (deferredRef.current) {
+      deferredRef.current.prompt();
+      const { outcome } = await deferredRef.current.userChoice;
+      if (outcome === "accepted") dismiss();
+      deferredRef.current = null;
+    }
+  };
+
+  return (
+    <div className="animate-fade-up mt-3 rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
+      <div className="flex items-start gap-2.5">
+        <span className="text-lg">📲</span>
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-white">Instala ProAgenda en tu celular</p>
+          {isIOS ? (
+            <p className="mt-0.5 text-[11px] text-zinc-400">
+              Toca <strong>Compartir</strong> ⬆️ y luego{" "}
+              <strong>“Agregar a pantalla de inicio”</strong>.
+            </p>
+          ) : (
+            <p className="mt-0.5 text-[11px] text-zinc-400">Reserva más rápido la próxima vez, como una app.</p>
+          )}
+        </div>
+        <button onClick={dismiss} aria-label="Cerrar" className="text-xs text-zinc-500 hover:text-zinc-300">✕</button>
+      </div>
+      {!isIOS && (
+        <button
+          onClick={install}
+          className="mt-2 w-full rounded-lg bg-gold-500 py-1.5 text-xs font-bold text-zinc-950 transition hover:bg-gold-400"
+        >
+          Instalar ahora
+        </button>
+      )}
+    </div>
   );
 }
