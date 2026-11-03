@@ -26,7 +26,14 @@ async function findActiveBooking(fromPhone: string) {
   const tail = d.slice(-9); // últimos 9 dígitos ej: 945099183
   const tail8 = d.slice(-8);
   const clients = await prisma.client.findMany({
-    where: { phone: { not: "" } },
+    where: {
+      phone: { not: "" },
+      // Pre-filtro en BD (los teléfonos terminan en los mismos dígitos);
+      // el matching difuso se hace en memoria abajo.
+      OR: tail8.length >= 8
+        ? [{ phone: { contains: tail8 } }, { phone: { contains: tail } }]
+        : undefined,
+    },
   });
   const matchedIds = clients
     .filter((c) => {
@@ -72,8 +79,24 @@ export async function POST(req: Request) {
   const text = String(form.get("Body") ?? buttonId ?? "").trim();
   if (!from) return NextResponse.json({ ok: true });
 
-  const cmd = (buttonId || text).toLowerCase();
-  console.log(`[webhook] de=${from} botón=${buttonId} texto=${text}`);
+  // Normalización del comando: Twilio envía los botones como "✅ Confirmar",
+  // "🔄 Reprogramar", "❌ Cancelar" y el usuario puede escribir variantes
+  // ("confirmo", "quiero cancelar", "REPROGRAMAR"). Se busca la acción por
+  // prefijo de palabra para que todo caiga en la acción correcta.
+  const norm = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quita tildes: "confirmacion" → "confirmacion"
+    .replace(/[^a-z0-9 ]/g, " ");
+  const cmd =
+    /\b(confirmar|confirmo|confirmada|si|sip|ok)\b/.test(norm)
+      ? "confirmar"
+      : /\b(reprogramar|cambiar|mover|otra hora|reagendar)\b/.test(norm)
+        ? "reprogramar"
+        : /\b(cancelar|cancelo|anular)\b/.test(norm)
+          ? "cancelar"
+          : "";
+  console.log(`[webhook] de=${from} botón=${buttonId} texto=${text} → cmd=${cmd || "menú"}`);
 
   const booking = await findActiveBooking(from);
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
@@ -83,9 +106,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  if (cmd.includes("confirmar")) {
+  if (cmd === "confirmar") {
     if (booking.reminderStatus === "CONFIRMADO") {
       await reply(from, "✅ Tu cita ya estaba confirmada. ¡Nos vemos! 💈");
+      return NextResponse.json({ ok: true });
+    }
+    if (booking.status !== "RESERVADO") {
+      await reply(from, "Esta reserva ya no está activa. Si necesitas una nueva cita, agéndala cuando quieras 💈");
       return NextResponse.json({ ok: true });
     }
     await prisma.booking.update({ where: { id: booking.id }, data: { reminderStatus: "CONFIRMADO" } });
@@ -105,16 +132,26 @@ Tu cita quedó confirmada:
     return NextResponse.json({ ok: true });
   }
 
-  if (cmd.includes("cancelar")) {
-    await prisma.booking.update({ where: { id: booking.id }, data: { status: "CANCELADO" } });
+  if (cmd === "cancelar") {
+    if (booking.status !== "RESERVADO") {
+      await reply(from, "Esta reserva ya no está activa 💈");
+      return NextResponse.json({ ok: true });
+    }
+    await prisma.booking.update({ where: { id: booking.id }, data: { status: "CANCELADO", reminderStatus: "DESCARTADO" } });
     await reply(from, "¡Gracias por avisarnos! 🙏 Tu cita fue cancelada y el horario quedó libre. Vuelve cuando quieras 💈");
     return NextResponse.json({ ok: true });
   }
 
-  if (cmd.includes("reprogramar")) {
+  if (cmd === "reprogramar") {
+    if (booking.status !== "RESERVADO") {
+      await reply(from, "Esta reserva ya no está activa. Agenda una nueva cuando quieras 💈");
+      return NextResponse.json({ ok: true });
+    }
+    // Reserva activa: solo se puede reprogramar si sigue en estado RESERVADO.
     await reply(
       from,
-      `🔄 Para reprogramar tu cita, entra aquí y elige nuevo día y hora:\n${baseUrl}/reservar?reprogramar=${booking.token}`
+      `🔄 Para reprogramar tu cita, entra aquí y elige nuevo día y hora:
+${baseUrl}/reservar?reprogramar=${booking.token}`
     );
     return NextResponse.json({ ok: true });
   }
