@@ -56,6 +56,36 @@ export default function ClientsView() {
     setSelected(data.client);
   };
 
+  const deleteClient = async () => {
+    if (!selected) return;
+    if (!confirm(`¿Eliminar a ${selected.name} PERMANENTEMENTE?\n\nSe borrarán todas sus reservas y notas. Esta acción no se puede deshacer.`)) return;
+    const res = await fetch(`/api/admin/clients/${selected.id}`, { method: "DELETE" });
+    if (res.ok) {
+      setSelected(null);
+      loadList();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "No se pudo eliminar el cliente");
+    }
+  };
+
+  const deactivateClient = async () => {
+    if (!selected) return;
+    if (!confirm(`¿Desactivar a ${selected.name}?\n\nSe borrarán sus reservas y notas, y quedará inactivo.`)) return;
+    const res = await fetch(`/api/admin/clients/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "deactivate" }),
+    });
+    if (res.ok) {
+      setSelected(null);
+      loadList();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "No se pudo desactivar el cliente");
+    }
+  };
+
   const addNote = async () => {
     if (!selected || !noteText.trim()) return;
     setSavingNote(true);
@@ -112,7 +142,15 @@ export default function ClientsView() {
                 <h2 className="text-lg font-bold">{selected.name}</h2>
                 <p className="text-sm text-zinc-500">{selected.phone}{selected.email ? ` · ${selected.email}` : ""}</p>
               </div>
-              <button onClick={() => setSelected(null)} className="text-xs text-zinc-400 hover:text-zinc-700">Cerrar ✕</button>
+              <div className="flex shrink-0 items-center gap-3">
+                <button onClick={deactivateClient} className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-100">
+                  Desactivar
+                </button>
+                <button onClick={deleteClient} className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">
+                  Eliminar
+                </button>
+                <button onClick={() => setSelected(null)} className="text-xs text-zinc-400 hover:text-zinc-700">Cerrar ✕</button>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2">

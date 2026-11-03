@@ -56,3 +56,68 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
   return NextResponse.json({ note });
 }
+
+// ── Helpers compartidos por DELETE y PATCH ──────────────────
+async function requireKnownClient(accountId: string, clientId: string) {
+  const branchIds = await ownedBranchIds({ id: accountId });
+  const client = await prisma.client.findFirst({
+    where: { id: clientId, bookings: { some: { branchId: { in: branchIds } } } },
+  });
+  return client;
+}
+
+/**
+ * Elimina al cliente de forma PERMANENTE junto con todo su historial:
+ * reservas, notas privadas y recordatorios asociados.
+ */
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const account = await getSession();
+  if (!account || account.role !== "SHOP_OWNER") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const { id } = await params;
+  const client = await requireKnownClient(account.id, id);
+  if (!client) return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+
+  // Booking no tiene onDelete: Cascade hacia client, así que se borran primero.
+  await prisma.booking.deleteMany({ where: { clientId: id } });
+  await prisma.clientNote.deleteMany({ where: { clientId: id } });
+  await prisma.client.delete({ where: { id } });
+
+  return NextResponse.json({ ok: true });
+}
+
+/**
+ * Desactiva al cliente: borra sus reservas y notas, y deja el registro
+ * "oculto" sin historial. Para reactivarlo hay que volver a agendar.
+ */
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const account = await getSession();
+  if (!account || account.role !== "SHOP_OWNER") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const { id } = await params;
+  const { action } = await req.json().catch(() => ({}));
+
+  const client = await requireKnownClient(account.id, id);
+  if (!client) return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+
+  if (action === "deactivate") {
+    // Se borra todo su historial (reservas + notas) y se limpia el registro.
+    await prisma.booking.deleteMany({ where: { clientId: id } });
+    await prisma.clientNote.deleteMany({ where: { clientId: id } });
+    await prisma.client.update({
+      where: { id },
+      data: { name: "(inactivo)", email: null },
+    });
+    return NextResponse.json({ ok: true });
+  }
+
+  return NextResponse.json({ error: "Acción no soportada" }, { status: 400 });
+}
