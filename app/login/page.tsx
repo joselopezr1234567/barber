@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 /** Login único para dueño del local, super admin y trabajadores. */
@@ -81,7 +81,83 @@ export default function LoginPage() {
             /reservar
           </a>
         </p>
+
+        <InstallHint />
       </div>
+    </div>
+  );
+}
+
+/**
+ * Aviso pequeño para instalar la app desde la pantalla de login
+ * (iOS: instrucciones Compartir → Agregar a inicio; Android/Chrome: botón instalar).
+ * No aparece si ya está instalada o si el usuario lo cerró antes.
+ */
+function InstallHint() {
+  const [visible, setVisible] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const deferredRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (localStorage.getItem("pwa-dismissed-login")) return;
+
+    const ua = window.navigator.userAgent;
+    const ios = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+    setIsIOS(ios);
+
+    const onPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredRef.current = e;
+      setVisible(true);
+    };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    // En iOS no hay evento nativo: mostrar directo.
+    if (ios) setVisible(true);
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
+
+  if (!visible) return null;
+
+  const dismiss = () => {
+    setVisible(false);
+    localStorage.setItem("pwa-dismissed-login", "1");
+  };
+
+  const install = async () => {
+    if (deferredRef.current) {
+      deferredRef.current.prompt();
+      const { outcome } = await deferredRef.current.userChoice;
+      if (outcome === "accepted") dismiss();
+      deferredRef.current = null;
+    }
+  };
+
+  return (
+    <div className="animate-fade-up mt-4 rounded-xl border border-gold-500/40 bg-zinc-950 p-3 text-zinc-300">
+      <div className="flex items-start gap-2.5">
+        <span className="text-xl">📲</span>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-white">Instala ProAgenda</p>
+          {isIOS ? (
+            <p className="mt-0.5 text-xs text-zinc-400">
+              Toca <strong>Compartir</strong> ⬆️ y luego{" "}
+              <strong>“Agregar a pantalla de inicio”</strong>.
+            </p>
+          ) : (
+            <p className="mt-0.5 text-xs text-zinc-400">Úsala como una app desde tu pantalla de inicio.</p>
+          )}
+        </div>
+        <button onClick={dismiss} aria-label="Cerrar" className="text-xs text-zinc-500 hover:text-zinc-300">✕</button>
+      </div>
+      {!isIOS && (
+        <button
+          onClick={install}
+          className="mt-2.5 w-full rounded-lg bg-gold-500 py-2 text-xs font-bold text-zinc-950 transition hover:bg-gold-400"
+        >
+          Instalar ahora
+        </button>
+      )}
     </div>
   );
 }
