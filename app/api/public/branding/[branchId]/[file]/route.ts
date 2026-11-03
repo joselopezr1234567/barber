@@ -22,15 +22,23 @@ export async function GET(
   if (file !== "logo" && file !== "cover") {
     return new NextResponse("Not found", { status: 404 });
   }
-  const branch = await prisma.branch.findUnique({ where: { id: branchId } });
+  // Solo se consulta el campo de branding necesario; evita cargar el otro binario.
+  const isLogo = file === "logo";
+  const branch = await prisma.branch.findUnique({
+    where: { id: branchId },
+    select: {
+      logoUrl: true, logoData: true, logoMime: true,
+      coverUrl: true, coverData: true, coverMime: true,
+    },
+  });
   if (!branch) return new NextResponse("Not found", { status: 404 });
-  const url = file === "logo" ? branch.logoUrl : branch.coverUrl;
+  const url = isLogo ? branch.logoUrl : branch.coverUrl;
   if (!url) return new NextResponse("Not found", { status: 404 });
 
   // Binario servido desde la BD (sobrevive a deploys, la carpeta public/ se
   // congela con el build en producción).
-  const data = file === "logo" ? branch.logoData : branch.coverData;
-  const mime = (file === "logo" ? branch.logoMime : branch.coverMime) ?? "image/png";
+  const data = isLogo ? branch.logoData : branch.coverData;
+  const mime = (isLogo ? branch.logoMime : branch.coverMime) ?? "image/png";
   if (data) {
     return new NextResponse(new Uint8Array(data), {
       headers: {
