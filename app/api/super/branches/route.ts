@@ -57,6 +57,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ branch }, { status: 201 });
   } catch (e) {
     console.error("Error creando sucursal:", e);
-    return NextResponse.json({ error: "No se pudo crear la barbería" }, { status: 500 });
+    return NextResponse.json({ error: "No se pudo crear el negocio" }, { status: 500 });
   }
 }

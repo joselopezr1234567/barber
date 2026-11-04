@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { formatPrice, minToLabel, prettyDate } from "@/lib/time";
 
-/** Confirma asistencia desde el enlace de WhatsApp (público, por token). */
+/** Confirma asistencia desde el enlace público de la reserva (por token). */
 export async function POST(_req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const booking = await prisma.booking.findUnique({

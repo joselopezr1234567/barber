@@ -116,7 +116,7 @@ export default function WorkersView() {
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
           <p className="text-sm text-zinc-500">
-            Barberos de tus sucursales. Son exclusivos de cada barbería.
+            Barberos de tus sucursales. Son exclusivos de cada negocio.
           </p>
         </div>
         <button

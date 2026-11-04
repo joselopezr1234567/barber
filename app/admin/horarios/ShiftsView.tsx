@@ -31,7 +31,7 @@ export default function ShiftsView() {
       setBarbers(all);
       const brs: BranchRef[] = Array.isArray(data.branches) ? data.branches : [];
       setBranches(brs);
-      // Por defecto mostrar solo la primera sucursal (evita mezclar barberos de otras barberías)
+      // Por defecto mostrar solo la primera sucursal (evita mezclar barberos de otros negocios)
       const firstBranch = brs[0]?.id ?? "all";
       setBranchId(firstBranch);
       const first = all.find((b) => firstBranch === "all" || b.branchId === firstBranch);

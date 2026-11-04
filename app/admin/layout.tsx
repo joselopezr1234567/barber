@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar: fija en escritorio */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-52 flex-col bg-zinc-900 text-zinc-300 md:flex">
         <div className="border-b border-zinc-800 px-5 py-5">
-          <p className="text-lg font-bold text-white">💈 Barbería</p>
+          <p className="text-lg font-bold text-white">💈 Mi negocio</p>
           <p className="text-xs text-zinc-500">{session.name}</p>
         </div>
         <nav className="flex-1 space-y-1 p-3">

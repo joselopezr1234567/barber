@@ -53,7 +53,7 @@ export default function SuperView() {
       const dAcc = await rAcc.json();
       if (!rAcc.ok) {
         setSavingBranch(false);
-        setBranchError(dAcc.error ?? "Error al crear el login de la barbería");
+        setBranchError(dAcc.error ?? "Error al crear el login del negocio");
         return;
       }
       accountId = dAcc.account.id;
@@ -163,7 +163,7 @@ export default function SuperView() {
     const res = await fetch(`/api/super/branches/${b.id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      alert(data.error ?? "No se pudo eliminar la barbería");
+      alert(data.error ?? "No se pudo eliminar el negocio");
       return;
     }
     load();
@@ -186,9 +186,9 @@ export default function SuperView() {
     <div className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Logins de barberías</h1>
+          <h1 className="text-2xl font-bold">Logins de negocios</h1>
           <p className="text-sm text-zinc-500">
-            Crea y administra las cuentas que usan las barberías para entrar a su panel.
+            Crea y administra las cuentas que usan los negocios para entrar a su panel.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -196,7 +196,7 @@ export default function SuperView() {
             onClick={() => { setCreatingBranch(true); setBranchError(null); }}
             className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
           >
-            + Nueva barbería
+            + Nuevo negocio
           </button>
           <button
             onClick={() => { setCreating(true); setError(null); setForm(EMPTY_FORM); setFormBranches([]); }}
@@ -231,7 +231,7 @@ export default function SuperView() {
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                     a.role === "PLATFORM_ADMIN" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"
                   }`}>
-                    {a.role === "PLATFORM_ADMIN" ? "Plataforma" : "Barbería"}
+                    {a.role === "PLATFORM_ADMIN" ? "Plataforma" : "Negocio"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-xs">{branchNames(a)}</td>
@@ -266,7 +266,7 @@ export default function SuperView() {
               <>
                 <tr>
                   <td colSpan={6} className="bg-zinc-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                    Barberías (sucursales)
+                    Negocios (sucursales)
                   </td>
                 </tr>
                 {branchesFull.map((b) => (
@@ -276,7 +276,7 @@ export default function SuperView() {
                       <p className="text-xs text-zinc-500">Dueño: {b.ownerName ?? "—"}{b.ownerEmail ? ` (${b.ownerEmail})` : ""}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Barbería</span>
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Negocio</span>
                     </td>
                     <td className="px-4 py-3 text-xs">{b.address ?? "—"}</td>
                     <td className="px-4 py-3" />
@@ -319,7 +319,7 @@ export default function SuperView() {
 
         {branchesFull.length > 0 && (
           <>
-            <p className="px-1 pt-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Barberías (sucursales)</p>
+            <p className="px-1 pt-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Negocios (sucursales)</p>
             {branchesFull.map((b) => (
               <div key={b.id} className="rounded-xl border border-zinc-200 bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
@@ -328,7 +328,7 @@ export default function SuperView() {
                     <p className="text-xs text-zinc-500">{b.address ?? ""}</p>
                     <p className="text-xs text-zinc-500">Dueño: {b.ownerName ?? "—"}</p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Barbería</span>
+                  <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Negocio</span>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
                   <button onClick={() => deleteBranch(b)} className="text-red-600 hover:underline">Eliminar</button>
@@ -353,7 +353,7 @@ export default function SuperView() {
               </select>
             </Field>
             <Field label="Nombre del negocio / sucursal">
-              <input value={branchForm.name} onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })} className={inputCls} placeholder="Barbería El Estilo" />
+              <input value={branchForm.name} onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })} className={inputCls} placeholder="Negocio El Estilo" />
             </Field>
             <Field label="Dirección (opcional)">
               <input value={branchForm.address} onChange={(e) => setBranchForm({ ...branchForm, address: e.target.value })} className={inputCls} />
@@ -362,7 +362,7 @@ export default function SuperView() {
               <input value={branchForm.phone} onChange={(e) => setBranchForm({ ...branchForm, phone: e.target.value })} className={inputCls} placeholder="+56 9 1234 5678" />
             </Field>
             <div className="rounded-lg bg-zinc-50 p-3">
-              <p className="text-xs font-semibold text-zinc-600">Login de la barbería (opcional pero recomendado)</p>
+              <p className="text-xs font-semibold text-zinc-600">Login del negocio (opcional pero recomendado)</p>
               <Field label="Email">
                 <input type="email" value={branchForm.ownerEmail} onChange={(e) => setBranchForm({ ...branchForm, ownerEmail: e.target.value })} className={inputCls} />
               </Field>
@@ -386,7 +386,7 @@ export default function SuperView() {
         <Modal onClose={() => setCreating(false)}>
           <h3 className="font-semibold">Nueva cuenta</h3>
           <div className="mt-4 space-y-3">
-            <Field label="Nombre / Barbería">
+            <Field label="Nombre / Negocio">
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
             </Field>
             <Field label="Email">
@@ -397,7 +397,7 @@ export default function SuperView() {
             </Field>
             <Field label="Rol">
               <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={inputCls}>
-                <option value="SHOP_OWNER">Barbería (accede a /admin)</option>
+                <option value="SHOP_OWNER">Negocio (accede a /admin)</option>
                 <option value="PLATFORM_ADMIN">Plataforma (accede a /super)</option>
               </select>
             </Field>
@@ -435,7 +435,7 @@ export default function SuperView() {
           <p className="mt-0.5 text-xs text-zinc-500">{viewingBarbers.email}</p>
           <div className="mt-4 space-y-3">
             {allBarbers(viewingBarbers).length === 0 ? (
-              <p className="text-sm text-zinc-400">Esta barbería aún no registra trabajadores.</p>
+              <p className="text-sm text-zinc-400">Este negocio aún no registra trabajadores.</p>
             ) : (
               viewingBarbers.branches.map((b) => (
                 <div key={b.id}>

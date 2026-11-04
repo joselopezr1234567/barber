@@ -19,10 +19,7 @@ const STATUS_LABEL: Record<string, string> = {
   ATENDIDO: "Atendido",
   CANCELADO: "Cancelado",
   NO_ASISTIO: "No asistió",
-  ENVIADO: "WA enviado",
-  ENTREGADO: "WA entregado",
-  LEIDO: "WA leído",
-  FALLADO: "WA falló",
+  NOTIFICADO: "Avisado",
 };
 const STATUS_CLS: Record<string, string> = {
   RESERVADO: "bg-blue-100 text-blue-700",
@@ -30,10 +27,7 @@ const STATUS_CLS: Record<string, string> = {
   ATENDIDO: "bg-emerald-100 text-emerald-700",
   CANCELADO: "bg-red-100 text-red-600",
   NO_ASISTIO: "bg-zinc-200 text-zinc-600",
-  ENVIADO: "bg-amber-100 text-amber-700",
-  ENTREGADO: "bg-teal-100 text-teal-700",
-  LEIDO: "bg-sky-100 text-sky-700",
-  FALLADO: "bg-orange-100 text-orange-700",
+  NOTIFICADO: "bg-teal-100 text-teal-700",
 };
 
 function fmtTime(min: number) {
@@ -67,7 +61,7 @@ export default function BarberAgendaView({
   useEffect(() => { load(); }, [load]);
 
   // Polling: refresca la agenda cada 30s para que el badge cambie solo
-  // cuando el cliente confirma desde su WhatsApp.
+  // cuando el cliente confirma desde su enlace de reserva.
   useEffect(() => {
     const iv = setInterval(() => {
       if (document.visibilityState === "visible") load();
@@ -75,7 +69,7 @@ export default function BarberAgendaView({
     return () => clearInterval(iv);
   }, [load]);
 
-  // Refresca apenas se vuelve a la pestaña (p.ej. tras ver WhatsApp).
+  // Refresca apenas se vuelve a la pestaña.
   useEffect(() => {
     const onVis = () => {
       if (document.visibilityState === "visible") load();
@@ -95,21 +89,6 @@ export default function BarberAgendaView({
       alert(err.error ?? "Error al actualizar");
       return;
     }
-    load();
-  };
-
-  const sendWhatsApp = async (bookingId: string) => {
-    const res = await fetch(`/api/barber/agenda/remind`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingId, type: "CONFIRMACION" }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      alert(data.error ?? "Error al enviar el WhatsApp");
-      return;
-    }
-    alert("📱 WhatsApp de confirmación enviado");
     load();
   };
 
@@ -181,16 +160,14 @@ export default function BarberAgendaView({
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? "bg-zinc-200 text-zinc-600"}`}>
                   {STATUS_LABEL[b.status === "RESERVADO" && b.reminderStatus === "CONFIRMADO" ? "CONFIRMADO" : b.status] ?? b.status}
                 </span>
-                {b.status === "RESERVADO" &&
-                  b.reminderStatus &&
-                  ["ENVIADO", "ENTREGADO", "LEIDO"].includes(b.reminderStatus) && (
-                    <span
-                      title={`Estado del WhatsApp: ${STATUS_LABEL[b.reminderStatus]}`}
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.reminderStatus]}`}
-                    >
-                      {STATUS_LABEL[b.reminderStatus]}
-                    </span>
-                  )}
+                {b.status === "RESERVADO" && (
+                  <span
+                    title="Estado del aviso al cliente"
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[b.reminderStatus === "NOTIFICADO" ? "NOTIFICADO" : "RESERVADO"]}`}
+                  >
+                    {b.reminderStatus === "NOTIFICADO" ? "🔔 Avisado" : "🔔 Sin aviso"}
+                  </span>
+                )}
                 <select
                   value={b.status}
                   onChange={(e) => setStatus(b.id, e.target.value)}
@@ -201,13 +178,15 @@ export default function BarberAgendaView({
                   ))}
                 </select>
                 {b.status === "RESERVADO" && (
-                  <button
-                    onClick={() => sendWhatsApp(b.id)}
-                    title="Enviar WhatsApp de confirmación al cliente"
+                  <a
+                    href={b.client?.phone ? `https://wa.me/${b.client.phone.replace(/\D/g, "")}` : "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Abrir chat de WhatsApp con el cliente"
                     className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500"
                   >
                     📱 WhatsApp
-                  </button>
+                  </a>
                 )}
               </div>
             </div>

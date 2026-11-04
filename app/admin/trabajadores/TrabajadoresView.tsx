@@ -103,7 +103,7 @@ export default function TrabajadoresView() {
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
           <p className="text-sm text-zinc-500">
-            Barberos exclusivos de cada barbería. Los barberos inactivos no aparecen al agendar.
+            Barberos exclusivos de cada negocio. Los barberos inactivos no aparecen al agendar.
           </p>
         </div>
         <button onClick={openCreate} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800">
@@ -116,7 +116,7 @@ export default function TrabajadoresView() {
           <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
             <tr>
               <th className="px-4 py-3">Barbero</th>
-              <th className="px-4 py-3">Barbería</th>
+              <th className="px-4 py-3">Negocio</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Acciones</th>
             </tr>
@@ -157,9 +157,9 @@ export default function TrabajadoresView() {
             <Field label="Nombre">
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Ej: Carlos" />
             </Field>
-            <Field label="Barbería">
+            <Field label="Negocio">
               <select value={branchId} onChange={(e) => setBranchId(e.target.value)} className={inputCls}>
-                <option value="">Selecciona una barbería</option>
+                <option value="">Selecciona un negocio</option>
                 {branches.map((br) => (
                   <option key={br.id} value={br.id}>{br.name}</option>
                 ))}

@@ -71,7 +71,7 @@ export async function GET(
 
 /**
  * Sube el logo o cover: POST /api/public/branding/<branchId>/logo (multipart/form-data, campo "file").
- * Solo el dueño de la barbería (SHOP_OWNER) o el admin de la plataforma.
+ * Solo el dueño del negocio (SHOP_OWNER) o el admin de la plataforma.
  */
 export async function POST(
   req: NextRequest,

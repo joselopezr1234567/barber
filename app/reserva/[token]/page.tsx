@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatPrice, minToLabel, prettyDate } from "@/lib/time";
 import BookingActions from "./BookingActions";
+import PushOptIn from "@/app/c/[token]/PushOptIn";
 
 export default async function ReservaPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -51,6 +52,8 @@ export default async function ReservaPage({ params }: { params: Promise<{ token:
           <span>Precio</span><span className="text-gold-400">{formatPrice(booking.service.price)}</span>
         </div>
       </div>
+
+      {!cancelled && <PushOptIn token={booking.token} />}
 
       {!cancelled && (
         <BookingActions

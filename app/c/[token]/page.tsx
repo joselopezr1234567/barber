@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatPrice, minToLabel, prettyDate } from "@/lib/time";
 import ConfirmClientActions from "./ConfirmClientActions";
+import PushOptIn from "./PushOptIn";
 
 /** Página pública con los 3 botones: Confirmar / Reprogramar / Cancelar */
 export default async function ConfirmClientPage({ params }: { params: Promise<{ token: string }> }) {
@@ -56,6 +57,8 @@ export default async function ConfirmClientPage({ params }: { params: Promise<{ 
           confirmed={confirmed}
         />
       )}
+
+      {!cancelled && <PushOptIn token={booking.token} />}
 
       <p className="mt-8 text-center text-xs text-zinc-500">
         {booking.branch.name} · {booking.branch.address} · {booking.branch.phone}

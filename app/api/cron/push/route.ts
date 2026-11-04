@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processReminders } from "@/lib/reminders";
+import { processPushReminders } from "@/lib/push";
 
 /**
- * Procesa recordatorios pendientes.
- * Protegido por CRON_SECRET: se llama desde un cron externo cada 30-60 min:
- *   curl -H "Authorization: Bearer $CRON_SECRET" https://tu-app/api/cron/reminders
+ * GET /api/cron/push
+ * Envia el recordatorio push (1 dia antes de la cita, cualquier hora).
+ * Protegido por CRON_SECRET, se llama desde un cron externo cada 30-60 min:
+ *   curl -H "Authorization: Bearer $CRON_SECRET" https://tu-app/api/cron/push
  */
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -12,6 +13,6 @@ export async function GET(req: NextRequest) {
   if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const stats = await processReminders();
+  const stats = await processPushReminders();
   return NextResponse.json({ ok: true, ...stats });
 }

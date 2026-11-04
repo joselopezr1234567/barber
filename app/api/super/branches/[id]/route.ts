@@ -5,8 +5,8 @@ import { getSession } from "@/lib/auth";
 /**
  * DELETE /api/super/branches/[id]
  * Elimina PERMANENTEMENTE una sucursal y todo su contenido:
- * reservas, servicios, barberos (con turnos y bloqueos), notas de clientes
- * asociadas a sus barberos y branding. Al desaparecer, la barbería también
+ * reservas, servicios, trabajadores (con turnos y bloqueos), notas de clientes
+ * asociadas a sus barberos y branding. Al desaparecer, el negocio también
  * desaparece de la pantalla principal de reservas (/ y /reservar).
  */
 export async function DELETE(

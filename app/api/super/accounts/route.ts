@@ -26,7 +26,7 @@ export async function GET() {
   });
 }
 
-/** Crear cuenta de barbería (o de plataforma) */
+/** Crear cuenta de negocio (o de plataforma) */
 export async function POST(req: NextRequest) {
   const account = await getSession();
   if (!account || account.role !== "PLATFORM_ADMIN") {

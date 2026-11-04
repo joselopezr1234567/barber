@@ -17,7 +17,7 @@ export default async function SuperLayout({ children }: { children: React.ReactN
         </div>
         <nav className="flex-1 space-y-1 p-3">
           <Link href="/super" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-zinc-800 hover:text-white">
-            🔑 Logins de barberías
+            🔑 Logins de negocios
           </Link>
         </nav>
         <div className="border-t border-zinc-800 p-3">
@@ -32,7 +32,7 @@ export default async function SuperLayout({ children }: { children: React.ReactN
           href="/super"
           className="shrink-0 whitespace-nowrap rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 active:bg-zinc-700"
         >
-          🔑 Logins de barberías
+          🔑 Logins de negocios
         </Link>
       </header>
 

@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
         <h1 className="text-xl font-bold">Iniciar sesión</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Panel para barberías, peluquerías, centros médicos y más.
+          Panel para negocios con agenda: barberías, peluquerías, centros médicos y más.
         </p>
 
         <form onSubmit={submit} className="mt-5 space-y-4">

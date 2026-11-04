@@ -222,21 +222,22 @@ export default function AgendaView() {
                               </button>
                             ))}
                             <div className="my-1 border-t border-zinc-200" />
-                            <button
-                              onClick={async () => {
-                                setOpenMenu(null);
-                                const res = await fetch(`/api/admin/bookings/${b.id}/remind`, {
-                                  method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ type: "RECORDATORIO" }),
-                                });
-                                const data = await res.json();
-                                alert(res.ok ? "📱 Recordatorio enviado" : data.error ?? "Error");
-                              }}
-                              className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-zinc-100"
-                            >
-                              📱 Enviar WhatsApp
-                            </button>
+                            {b.client.phone && (
+                              <a
+                                href={`https://wa.me/${b.client.phone.replace(/\D/g, "")}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={() => setOpenMenu(null)}
+                                className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-zinc-100"
+                              >
+                                📱 WhatsApp al cliente
+                              </a>
+                            )}
+                            {b.reminderStatus === "NOTIFICADO" && (
+                              <span className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs text-emerald-700">
+                                🔔 Notificación enviada
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

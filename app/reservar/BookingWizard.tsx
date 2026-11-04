@@ -297,7 +297,7 @@ export default function BookingWizard() {
             type="search"
             value={branchSearch}
             onChange={(e) => setBranchSearch(e.target.value)}
-            placeholder="Buscar barbería por nombre…"
+            placeholder="Buscar negocio por nombre…"
             className="mt-4 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <div className="mt-4 space-y-3">
@@ -337,7 +337,7 @@ export default function BookingWizard() {
               </button>
             ))}
             {filteredBranches.length === 0 && (
-              <p className="py-6 text-center text-sm text-zinc-500">No encontramos barberías con ese nombre.</p>
+              <p className="py-6 text-center text-sm text-zinc-500">No encontramos negocios con ese nombre.</p>
             )}
           </div>
         </section>

@@ -97,6 +97,7 @@ model Client {
   email     String?
   bookings  Booking[]
   notes     ClientNote[]
+  pushSubs  PushSubscription[]
   createdAt DateTime @default(now())
 
   @@unique([phone])
@@ -152,10 +153,24 @@ model Booking {
   startMin  Int
   endMin    Int
   status    String  @default("RESERVADO") // RESERVADO | ATENDIDO | CANCELADO | NO_ASISTIO
-  reminderStatus String @default("PENDIENTE") // PENDIENTE | ENVIADO | ENTREGADO | LEIDO | FALLADO | DESCARTADO | CONFIRMADO
-  reminderType   String?               // "RECORDATORIO" | "CONFIRMACION"
+  reminderStatus String @default("PENDIENTE") // PENDIENTE | NOTIFICADO | CONFIRMADO | DESCARTADO
+  reminderType   String?               // "RECORDATORIO"
   createdAt DateTime @default(now())
 
   @@index([date])
   @@index([barberId, date])
+}
+
+// ── Suscripciones push (Web Push del navegador) ─────────────
+// Cada dispositivo que acepta las notificaciones se guarda aquí,
+// vinculado al cliente, para enviarle el recordatorio 1 día antes
+// de su cita sin depender de WhatsApp/SMS.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
 }
