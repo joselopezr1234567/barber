@@ -78,6 +78,16 @@ export default function BarberAgendaView({
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [load]);
 
+  // Refresca al instante cuando el cliente confirma/cancela desde la
+  // notificación push (el service worker avisa con postMessage).
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if ((e.data as { type?: string } | null)?.type === "booking-updated") load();
+    };
+    navigator.serviceWorker?.addEventListener("message", onMsg);
+    return () => navigator.serviceWorker?.removeEventListener("message", onMsg);
+  }, [load]);
+
   const setStatus = async (bookingId: string, status: string) => {
     const res = await fetch("/api/barber/agenda", {
       method: "PATCH",

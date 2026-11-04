@@ -86,6 +86,16 @@ export default function AgendaView() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Refresca al instante cuando un cliente confirma/cancela desde la
+  // notificación push (el service worker avisa con postMessage).
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if ((e.data as { type?: string } | null)?.type === "booking-updated") load();
+    };
+    navigator.serviceWorker?.addEventListener("message", onMsg);
+    return () => navigator.serviceWorker?.removeEventListener("message", onMsg);
+  }, [load]);
+
   const changeStatus = async (id: string, status: string) => {
     setOpenMenu(null);
     await fetch(`/api/admin/bookings/${id}`, {

@@ -28,6 +28,10 @@ export type PushPayload = {
   body: string;
   url?: string;
   tag?: string;
+  // Token e id de la reserva: permiten confirmar/cancelar directo
+  // desde los botones de la notificación (ver public/sw.js).
+  token?: string;
+  bookingId?: string;
 };
 
 /** Envía a todas las suscripciones de un cliente. Borra las inválidas (410/404). */
@@ -121,9 +125,11 @@ export async function processPushReminders(): Promise<{ processed: number; sent:
     const when = `${b.date} ${String(Math.floor(b.startMin / 60)).padStart(2, "0")}:${String(b.startMin % 60).padStart(2, "0")}`;
     const sent = await sendToSubs(subs, {
       title: "Recordatorio de tu cita",
-      body: `Hola ${b.client.name.split(" ")[0]}, tu cita de ${b.service.name} en ${b.branch.name} es ${b.date === tomorrowISO() ? "mañana" : "hoy"} (${when})${b.barber ? ` con ${b.barber.name}` : ""}. ¡Te esperamos!`,
+      body: `Hola ${b.client.name.split(" ")[0]}, tu cita de ${b.service.name} en ${b.branch.name} es ${b.date === tomorrowISO() ? "mañana" : "hoy"} (${when})${b.barber ? ` con ${b.barber.name}` : ""}.\n\n✅ Confirmar · 🔄 Reprogramar · ❌ Cancelar`,
       url: `/c/${b.token}`,
       tag: `cita-${b.id}`,
+      token: b.token,
+      bookingId: b.id,
     });
     await prisma.booking.update({
       where: { id: b.id },
