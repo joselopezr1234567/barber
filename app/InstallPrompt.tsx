@@ -28,7 +28,12 @@ export default function InstallPrompt() {
     setIsIOS(ios);
 
     const dismissed = localStorage.getItem("pwa-dismissed");
-    if (dismissed) return;
+    // Permitimos volver a preguntar después de 3 días si no instaló.
+    if (dismissed) {
+      const dismissedAt = Number(localStorage.getItem("pwa-dismissed-at") || 0);
+      const tresDias = 3 * 24 * 60 * 60 * 1000;
+      if (dismissedAt && Date.now() - dismissedAt < tresDias) return;
+    }
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
@@ -45,12 +50,19 @@ export default function InstallPrompt() {
         window.removeEventListener("beforeinstallprompt", onPrompt);
       };
     }
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+    // Fallback Android/escritorio: si Chrome no dispara beforeinstallprompt
+    // (solo lo ofrece en el menú ⋮), mostramos el banner con instrucciones.
+    const fallback = setTimeout(() => setShow(true), 6000);
+    return () => {
+      clearTimeout(fallback);
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+    };
   }, []);
 
   const close = () => {
     setShow(false);
     localStorage.setItem("pwa-dismissed", "1");
+    localStorage.setItem("pwa-dismissed-at", String(Date.now()));
   };
 
   const install = async () => {
@@ -82,9 +94,15 @@ export default function InstallPrompt() {
               Toca <strong>Compartir</strong> ⬆️ y luego{" "}
               <strong>“Agregar a pantalla de inicio”</strong>.
             </p>
-          ) : (
+          ) : deferred ? (
             <p className="mt-1 text-sm text-zinc-400">
               Acceso directo desde tu pantalla de inicio, como una app.
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-zinc-400">
+              Abre el menú del navegador (⋮) y elige{" "}
+              <strong>“Instalar aplicación”</strong> o{" "}
+              <strong>“Agregar a pantalla de inicio”</strong>.
             </p>
           )}
         </div>
