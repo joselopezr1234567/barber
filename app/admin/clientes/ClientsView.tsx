@@ -104,7 +104,7 @@ export default function ClientsView() {
       {/* Lista */}
       <div className={selected ? "w-full md:w-80 md:shrink-0" : "w-full max-w-2xl"}>
         <h1 className="text-2xl font-bold">Clientes</h1>
-        <p className="text-sm text-zinc-500">Ficha digital con historial de visitas y notas del barbero.</p>
+        <p className="text-sm text-zinc-500">Ficha digital con historial de visitas y notas del profesional.</p>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -186,7 +186,7 @@ export default function ClientsView() {
               {/* Notas privadas */}
               <div className="p-5">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                  Notas privadas del barbero
+                  Notas privadas del profesional
                 </h3>
                 <ul className="mt-3 max-h-56 space-y-2 overflow-y-auto pr-1">
                   {selected.notes.map((n) => (

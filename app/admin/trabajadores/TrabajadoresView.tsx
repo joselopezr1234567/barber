@@ -92,7 +92,7 @@ export default function TrabajadoresView() {
   };
 
   const remove = async (b: Barber) => {
-    if (!confirm(`¿Eliminar al barbero "${b.name}"?`)) return;
+    if (!confirm(`¿Eliminar al profesional "${b.name}"?`)) return;
     await fetch(`/api/admin/barbers/${b.id}`, { method: "DELETE" });
     load();
   };
@@ -103,11 +103,11 @@ export default function TrabajadoresView() {
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
           <p className="text-sm text-zinc-500">
-            Barberos exclusivos de cada negocio. Los barberos inactivos no aparecen al agendar.
+            Profesionales exclusivos de cada negocio. Los inactivos no aparecen al agendar.
           </p>
         </div>
         <button onClick={openCreate} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800">
-          + Agregar barbero
+          + Agregar profesional
         </button>
       </div>
 
@@ -115,7 +115,7 @@ export default function TrabajadoresView() {
         <table className="w-full text-sm">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
             <tr>
-              <th className="px-4 py-3">Barbero</th>
+              <th className="px-4 py-3">Profesional</th>
               <th className="px-4 py-3">Negocio</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Acciones</th>
@@ -143,7 +143,7 @@ export default function TrabajadoresView() {
               </tr>
             ))}
             {!loading && barbers.length === 0 && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Aún no hay barberos registrados.</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Aún no hay profesionales registrados.</td></tr>
             )}
             {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
           </tbody>
@@ -152,7 +152,7 @@ export default function TrabajadoresView() {
 
       {(creating || editing) && (
         <Modal onClose={() => { setCreating(false); setEditing(null); }}>
-          <h3 className="font-semibold">{creating ? "Nuevo barbero" : "Editar barbero"}</h3>
+          <h3 className="font-semibold">{creating ? "Nuevo profesional" : "Editar profesional"}</h3>
           <div className="mt-4 space-y-3">
             <Field label="Nombre">
               <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Ej: Carlos" />

@@ -14,7 +14,7 @@ export default async function BarberPage() {
 
   return (
     <BarberAgendaView
-      barberName={barber?.name ?? "Barbero"}
+      barberName={barber?.name ?? "Profesional"}
       branchName={barber?.branch?.name ?? ""}
     />
   );

@@ -27,7 +27,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     `DTSTART:${fmt(booking.startMin)}`,
     `DTEND:${fmt(booking.endMin)}`,
     `SUMMARY:${booking.service.name} - ${booking.branch.name}`,
-    `DESCRIPTION:Barbero: ${booking.barber?.name ?? "Por asignar"}`,
+    `DESCRIPTION:Profesional: ${booking.barber?.name ?? "Por asignar"}`,
     `LOCATION:${booking.branch.address}`,
     "END:VEVENT",
     "END:VCALENDAR",

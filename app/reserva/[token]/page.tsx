@@ -18,7 +18,7 @@ export default async function ReservaPage({ params }: { params: Promise<{ token:
   const pad = (n: number) => String(n).padStart(2, "0");
   const start = `${ymd}T${pad(Math.floor(booking.startMin / 60))}${pad(booking.startMin % 60)}00`;
   const end = `${ymd}T${pad(Math.floor(booking.endMin / 60))}${pad(booking.endMin % 60)}00`;
-  const details = encodeURIComponent(`Barbero: ${booking.barber?.name ?? "Por asignar"}`);
+  const details = encodeURIComponent(`Profesional: ${booking.barber?.name ?? "Por asignar"}`);
   const location = encodeURIComponent(booking.branch.address);
   const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 
@@ -41,7 +41,7 @@ export default async function ReservaPage({ params }: { params: Promise<{ token:
       {/* Resumen */}
       <div className="animate-fade-up mt-8 rounded-2xl border-zinc-800 bg-zinc-900 p-5 text-sm">
         <div className="flex justify-between"><span className="text-zinc-400">Servicio</span><span className="font-medium">{booking.service.name}</span></div>
-        <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Barbero</span><span className="font-medium">{booking.barber?.name ?? "Cualquiera"}</span></div>
+        <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Profesional</span><span className="font-medium">{booking.barber?.name ?? "Cualquiera"}</span></div>
         <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Sucursal</span><span className="font-medium">{booking.branch.name}</span></div>
         <div className="mt-2.5 flex justify-between capitalize"><span className="text-zinc-400">Fecha</span><span className="font-medium">{prettyDate(booking.date)}</span></div>
         <div className="mt-2.5 flex justify-between">

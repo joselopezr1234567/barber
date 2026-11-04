@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const emailNorm = String(email).trim().toLowerCase();
   const dup = await prisma.barber.findUnique({ where: { email: emailNorm } });
   if (dup) {
-    return NextResponse.json({ error: "Ya existe un barbero con ese correo" }, { status: 409 });
+    return NextResponse.json({ error: "Ya existe un profesional con ese correo" }, { status: 409 });
   }
   const owned = await ownedBranchIds(account);
   if (!owned.includes(branchId)) {

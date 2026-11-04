@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const barber = await prisma.barber.findFirst({
     where: { id: barberId, branchId: { in: branchIds } },
   });
-  if (!barber) return NextResponse.json({ error: "Barbero no válido" }, { status: 403 });
+  if (!barber) return NextResponse.json({ error: "Profesional no válido" }, { status: 403 });
   const knownClient = await prisma.client.findFirst({
     where: { id, bookings: { some: { branchId: { in: branchIds } } } },
   });

@@ -15,7 +15,7 @@ type Barber = { id: string; name: string; branchId: string };
 type Service = { id: string; name: string; description: string | null; durationMin: number; price: number };
 type Slot = { startMin: number; label: string; barberIds: string[] };
 
-const STEPS = ["Local", "Servicio", "Barbero y hora", "Tus datos"];
+const STEPS = ["Local", "Servicio", "Profesional y hora", "Tus datos"];
 
 function initials(name: string) {
   return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
@@ -372,12 +372,12 @@ export default function BookingWizard() {
         </section>
       )}
 
-      {/* Paso 3: Barbero y horario */}
+      {/* Paso 3: Profesional y horario */}
       {step === 2 && (
         <section className="animate-fade-up">
-          <h2 className="text-xl font-bold">Elige barbero y hora</h2>
+          <h2 className="text-xl font-bold">Elige profesional y hora</h2>
 
-          {/* Barberos */}
+          {/* Profesionales */}
           <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1">
             <button
               onClick={() => setBarberId("ANY")}
@@ -465,7 +465,7 @@ export default function BookingWizard() {
             <div className="flex justify-between"><span className="text-zinc-400">Sucursal</span><span>{branch?.name}</span></div>
             <div className="mt-2 flex justify-between"><span className="text-zinc-400">Servicio</span><span>{service?.name}</span></div>
             <div className="mt-2 flex justify-between">
-              <span className="text-zinc-400">Barbero</span>
+              <span className="text-zinc-400">Profesional</span>
               <span>{barberId === "ANY" ? "Cualquiera disponible" : branchBarbers.find((b) => b.id === barberId)?.name}</span>
             </div>
             <div className="mt-2 flex justify-between">

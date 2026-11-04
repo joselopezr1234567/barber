@@ -116,7 +116,7 @@ export default function WorkersView() {
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
           <p className="text-sm text-zinc-500">
-            Barberos de tus sucursales. Son exclusivos de cada negocio.
+            Profesionales de tus sucursales. Son exclusivos de cada negocio.
           </p>
         </div>
         <button
@@ -207,11 +207,11 @@ export default function WorkersView() {
         <Modal onClose={() => setCreating(false)}>
           <h3 className="font-semibold">Nuevo trabajador</h3>
           <div className="mt-4 space-y-3">
-            <Field label="Nombre del barbero">
+            <Field label="Nombre del profesional">
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
             </Field>
-            <Field label="Correo (para que el barbero inicie sesión)">
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputCls} placeholder="barbero@correo.cl" />
+            <Field label="Correo (para que el profesional inicie sesión)">
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputCls} placeholder="profesional@correo.cl" />
             </Field>
             <Field label="Contraseña (mín. 6)">
               <input type="text" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={inputCls} placeholder="••••••" />

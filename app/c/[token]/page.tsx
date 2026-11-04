@@ -39,7 +39,7 @@ export default async function ConfirmClientPage({ params }: { params: Promise<{ 
       {/* Resumen */}
       <div className="animate-fade-up mt-8 rounded-2xl border-zinc-800 bg-zinc-900 p-5 text-sm">
         <div className="flex justify-between"><span className="text-zinc-400">Servicio</span><span className="font-medium">{booking.service.name}</span></div>
-        <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Barbero</span><span className="font-medium">{booking.barber?.name ?? "Cualquiera"}</span></div>
+        <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Profesional</span><span className="font-medium">{booking.barber?.name ?? "Cualquiera"}</span></div>
         <div className="mt-2.5 flex justify-between"><span className="text-zinc-400">Sucursal</span><span className="font-medium">{booking.branch.name}</span></div>
         <div className="mt-2.5 flex justify-between capitalize"><span className="text-zinc-400">Fecha</span><span className="font-medium">{prettyDate(booking.date)}</span></div>
         <div className="mt-2.5 flex justify-between">

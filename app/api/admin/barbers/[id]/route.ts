@@ -4,7 +4,7 @@ import { getSession, ownedBranchIds, hashPassword } from "@/lib/auth";
 
 async function requireOwnedBarber(accountId: string, barberId: string) {
   const barber = await prisma.barber.findUnique({ where: { id: barberId } });
-  if (!barber) return { error: "Barbero no encontrado", status: 404 as const };
+  if (!barber) return { error: "Profesional no encontrado", status: 404 as const };
   const owned = await ownedBranchIds({ id: accountId });
   if (!owned.includes(barber.branchId)) {
     return { error: "No tienes acceso a este barbero", status: 403 as const };
@@ -35,7 +35,7 @@ export async function PATCH(
     const dup = await prisma.barber.findFirst({
       where: { email: emailNorm, NOT: { id } },
     });
-    if (dup) return NextResponse.json({ error: "Ya existe un barbero con ese correo" }, { status: 409 });
+    if (dup) return NextResponse.json({ error: "Ya existe un profesional con ese correo" }, { status: 409 });
     data.email = emailNorm;
   }
   if (password) {

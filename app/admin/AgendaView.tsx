@@ -53,7 +53,7 @@ export default function AgendaView() {
     setNewBarber((s) => ({ ...s, saving: false, open: false, name: "" }));
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      alert(data.error ?? "Error al crear barbero");
+      alert(data.error ?? "Error al crear profesional");
       return;
     }
     load();
@@ -171,7 +171,7 @@ export default function AgendaView() {
         ))}
       </div>
 
-      {/* Columnas por barbero: fila con scroll en móvil, grid en escritorio */}
+      {/* Columnas por profesional: fila con scroll en móvil, grid en escritorio */}
       <div className="no-scrollbar mt-4 flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-3 xl:grid-cols-4">
         {barbers.map((barber) => {
           const list = bookings.filter((b) => b.barberId === barber.id);
