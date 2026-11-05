@@ -203,8 +203,8 @@ export default function BookingWizard() {
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
           {/* Placeholder centrado si no hay imagen aún */}
           {!branch?.coverUrl && (
-            <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 text-4xl">
-              💈
+            <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900">
+              <span className="text-lg font-bold tracking-widest text-zinc-500 uppercase">{branch?.name ?? ""}</span>
             </div>
           )}
           {branch?.coverUrl && (

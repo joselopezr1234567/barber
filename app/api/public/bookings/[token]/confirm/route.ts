@@ -22,7 +22,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
        <div style="text-align:center;max-width:420px;padding:24px">
          <div style="font-size:48px">✅</div>
          <h1 style="margin:8px 0 4px">¡Gracias por confirmar!</h1>
-         <p style="color:#a1a1aa;margin:0 0 20px">Nos vemos en tu cita 💈</p>
+         <p style="color:#a1a1aa;margin:0 0 20px">Nos vemos en tu cita 📅</p>
          <div style="text-align:left;background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;font-size:14px;line-height:2">
            <div style="display:flex;justify-content:space-between"><span style="color:#a1a1aa">Servicio</span><strong>${booking.service.name}</strong></div>
            <div style="display:flex;justify-content:space-between"><span style="color:#a1a1aa">Profesional</span><strong>${booking.barber?.name ?? "Por asignar"}</strong></div>

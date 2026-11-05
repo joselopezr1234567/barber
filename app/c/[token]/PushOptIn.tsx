@@ -51,6 +51,14 @@ export default function PushOptIn({ token }: { token?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub.toJSON(), token }),
       });
+      // Enviar de inmediato la pregunta de confirmación a este celular.
+      if (token) {
+        await fetch("/api/push/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        }).catch(() => {});
+      }
       setVisible(false);
     } catch (e) {
       console.warn("[push] error al suscribir:", e);

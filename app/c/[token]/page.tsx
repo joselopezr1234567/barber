@@ -22,14 +22,14 @@ export default async function ConfirmClientPage({ params }: { params: Promise<{ 
         <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${
           cancelled ? "bg-red-950" : confirmed ? "bg-emerald-950" : "bg-zinc-800"
         }`}>
-          {cancelled ? "❌" : confirmed ? "✅" : "💈"}
+          {cancelled ? "❌" : confirmed ? "✅" : "📅"}
         </div>
         <h1 className="mt-4 text-2xl font-bold">
           {cancelled ? "Reserva cancelada" : confirmed ? "¡Asistencia confirmada!" : "Tu cita está reservada"}
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
           {cancelled
-            ? "¡Gracias por avisarnos! 🙏 El horario quedó libre. Vuelve luego 💈"
+            ? "¡Gracias por avisarnos! 🙏 El horario quedó libre. Vuelve luego 📅"
             : confirmed
               ? `Gracias, ${booking.client.name.split(" ")[0]}. Nos vemos pronto.`
               : `Hola ${booking.client.name.split(" ")[0]}, ¿todo listo para tu cita?`}

@@ -12,6 +12,6 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
   await prisma.booking.update({ where: { token }, data: { status: "CANCELADO", reminderStatus: "DESCARTADO" } });
   return NextResponse.json({
     ok: true,
-    message: "¡Gracias por avisarnos! 🙏 Tu cita fue cancelada y el horario quedó libre. Vuelve luego 💈",
+    message: "¡Gracias por avisarnos! 🙏 Tu cita fue cancelada y el horario quedó libre. Vuelve luego 📅",
   });
 }
