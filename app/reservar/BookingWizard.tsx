@@ -201,11 +201,16 @@ export default function BookingWizard() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
-      {/* Cover personalizado del negocio */}
-      {branch?.coverUrl && (
+          {/* Placeholder centrado si no hay imagen aún */}
+          {!branch?.coverUrl && (
+            <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 text-4xl">
+              💈
+            </div>
+          )}
+          {branch?.coverUrl && (
         <div className="relative mb-4 h-28 overflow-hidden rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={branch.coverUrl} alt={branch.name} className="h-full w-full object-cover" />
+          <img src={branch.coverUrl} alt={branch.name} className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent" />
           {branch.logoUrl && (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -251,7 +256,7 @@ export default function BookingWizard() {
           <img
             src={promos[promoIndex].coverUrl ?? promos[promoIndex].logoUrl ?? ""}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/30" />
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
@@ -292,7 +297,6 @@ export default function BookingWizard() {
       {step === 0 && (
         <section className="animate-fade-up">
           <h2 className="text-xl font-bold">¿Dónde quieres tu cita?</h2>
-          <p className="mt-1 text-sm text-zinc-400">Elige la sucursal más cercana.</p>
           <input
             type="search"
             value={branchSearch}
@@ -511,6 +515,22 @@ export default function BookingWizard() {
         <p className="mt-4 rounded-xl border-red-900 bg-red-950/60 px-4 py-3 text-sm text-red-300">{error}</p>
       )}
 
+      {/* Propaganda del negocio, como tarjeta al final del contenido */}
+      {branch?.promoText && (
+        <a
+          href={branch.promoLinkUrl || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 block rounded-xl border border-gold-500/40 bg-gold-500/10 px-3 py-2 text-center text-xs font-medium text-gold-300 transition hover:bg-gold-500/20"
+        >
+          {branch.logoUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={branch.logoUrl} alt="" className="mr-1.5 inline-block h-4 w-4 rounded align-middle object-contain" />
+          )}
+          {branch.promoText}
+        </a>
+      )}
+
       {/* Barra inferior fija */}
       <div className="fixed inset-x-0 bottom-0 border-t border-zinc-800 bg-zinc-950/90 p-4 backdrop-blur">
         <div className="mx-auto w-full max-w-md">
@@ -533,98 +553,8 @@ export default function BookingWizard() {
             </button>
           )}
           </div>
-          {/* Propaganda del negocio, debajo del botón */}
-          {branch?.promoText && (
-            <a
-              href={branch.promoLinkUrl || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 block rounded-xl border border-gold-500/40 bg-gold-500/10 px-3 py-2 text-center text-xs font-medium text-gold-300 transition hover:bg-gold-500/20"
-            >
-              {branch.logoUrl && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={branch.logoUrl} alt="" className="mr-1.5 inline-block h-4 w-4 rounded align-middle object-contain" />
-              )}
-              {branch.promoText}
-            </a>
-          )}
-          {/* Invitación a instalar la app */}
-          <InstallNudge />
         </div>
       </div>
     </main>
-  );
-}
-
-/**
- * Aviso discreto bajo el botón de confirmar: invita a instalar ProAgenda.
- * iOS → instrucciones; Android/Chrome → botón de instalación nativa.
- * No aparece si ya está instalada o si el usuario lo cerró.
- */
-function InstallNudge() {
-  const [visible, setVisible] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const deferredRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if (localStorage.getItem("pwa-dismissed-reservar")) return;
-
-    const ua = window.navigator.userAgent;
-    const ios = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
-    setIsIOS(ios);
-
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      deferredRef.current = e;
-      setVisible(true);
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    if (ios) setVisible(true);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
-
-  if (!visible) return null;
-
-  const dismiss = () => {
-    setVisible(false);
-    localStorage.setItem("pwa-dismissed-reservar", "1");
-  };
-
-  const install = async () => {
-    if (deferredRef.current) {
-      deferredRef.current.prompt();
-      const { outcome } = await deferredRef.current.userChoice;
-      if (outcome === "accepted") dismiss();
-      deferredRef.current = null;
-    }
-  };
-
-  return (
-    <div className="animate-fade-up mt-3 rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-      <div className="flex items-start gap-2.5">
-        <span className="text-lg">📲</span>
-        <div className="flex-1">
-          <p className="text-xs font-semibold text-white">Instala ProAgenda en tu celular</p>
-          {isIOS ? (
-            <p className="mt-0.5 text-[11px] text-zinc-400">
-              Toca <strong>Compartir</strong> ⬆️ y luego{" "}
-              <strong>“Agregar a pantalla de inicio”</strong>.
-            </p>
-          ) : (
-            <p className="mt-0.5 text-[11px] text-zinc-400">Reserva más rápido la próxima vez, como una app.</p>
-          )}
-        </div>
-        <button onClick={dismiss} aria-label="Cerrar" className="text-xs text-zinc-500 hover:text-zinc-300">✕</button>
-      </div>
-      {!isIOS && (
-        <button
-          onClick={install}
-          className="mt-2 w-full rounded-lg bg-gold-500 py-1.5 text-xs font-bold text-zinc-950 transition hover:bg-gold-400"
-        >
-          Instalar ahora
-        </button>
-      )}
-    </div>
   );
 }
