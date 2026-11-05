@@ -51,10 +51,15 @@ model Branch {
   // Texto publicitario que aparece debajo del botón principal de reserva.
   promoText    String?
   promoLinkUrl String?
+  // Plan de cobro: meses de cortesía otorgados al crear el local (0 = paga desde ya).
+  freeMonths Int @default(0)
+  freeMonthsStart DateTime @default(now()) // desde cuándo corren los meses gratis
+  monthlyPrice Int @default(10000) // CLP mensual
   active  Boolean  @default(true)
   barbers Barber[]
   services Service[]
   bookings Booking[]
+  payments Payment[]
   createdAt DateTime @default(now())
 }
 
@@ -159,6 +164,23 @@ model Booking {
 
   @@index([date])
   @@index([barberId, date])
+}
+
+// ── Pagos mensuales del negocio (plan $10.000/mes CLP) ──────────
+// Un registro por mes; el super admin marca pagado/no pagado.
+model Payment {
+  id        String    @id @default(cuid())
+  branchId  String
+  branch    Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  period    String    // "YYYY-MM" — mes que se está cobrando
+  amount    Int       // CLP
+  paid      Boolean   @default(false)
+  paidAt    DateTime?
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@unique([branchId, period])
+  @@index([branchId])
 }
 
 // ── Suscripciones push (Web Push del navegador) ─────────────

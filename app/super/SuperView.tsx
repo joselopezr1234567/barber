@@ -29,7 +29,7 @@ export default function SuperView() {
 
   // Nueva sucursal
   const [creatingBranch, setCreatingBranch] = useState(false);
-  const [branchForm, setBranchForm] = useState({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "" });
+  const [branchForm, setBranchForm] = useState({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "", freeMonths: 0 });
   const [savingBranch, setSavingBranch] = useState(false);
   const [branchError, setBranchError] = useState<string | null>(null);
 
@@ -61,7 +61,7 @@ export default function SuperView() {
     const r = await fetch("/api/super/branches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, phone: branchForm.phone, vertical: branchForm.vertical, accountId }),
+      body: JSON.stringify({ name: branchForm.name, address: branchForm.address, phone: branchForm.phone, vertical: branchForm.vertical, accountId, freeMonths: Number(branchForm.freeMonths) || 0 }),
     });
     const data = await r.json();
     setSavingBranch(false);
@@ -70,7 +70,7 @@ export default function SuperView() {
       return;
     }
     setCreatingBranch(false);
-    setBranchForm({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "" });
+    setBranchForm({ name: "", address: "", phone: "", vertical: "BARBERIA", ownerEmail: "", ownerPassword: "", freeMonths: 0 });
     load();
   };
   const [editName, setEditName] = useState("");
@@ -361,6 +361,22 @@ export default function SuperView() {
             <Field label="Teléfono">
               <input value={branchForm.phone} onChange={(e) => setBranchForm({ ...branchForm, phone: e.target.value })} className={inputCls} placeholder="+56 9 1234 5678" />
             </Field>
+            <div className="rounded-lg bg-zinc-50 p-3">
+              <p className="text-xs font-semibold text-zinc-600">Plan de cobro</p>
+              <Field label="Meses de cortesía (gratis)">
+                <input
+                  type="number"
+                  min={0}
+                  max={24}
+                  value={branchForm.freeMonths}
+                  onChange={(e) => setBranchForm({ ...branchForm, freeMonths: Number(e.target.value) })}
+                  className={inputCls}
+                />
+              </Field>
+              <p className="text-[11px] text-zinc-500">
+                Plan: $10.000/mes desde que se crea el local. Los meses indicados quedan gratis.
+              </p>
+            </div>
             <div className="rounded-lg bg-zinc-50 p-3">
               <p className="text-xs font-semibold text-zinc-600">Login del negocio (opcional pero recomendado)</p>
               <Field label="Email">

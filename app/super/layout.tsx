@@ -19,6 +19,9 @@ export default async function SuperLayout({ children }: { children: React.ReactN
           <Link href="/super" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-zinc-800 hover:text-white">
             🔑 Logins de negocios
           </Link>
+          <Link href="/super/pagos" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-zinc-800 hover:text-white">
+            💰 Pagos mensuales
+          </Link>
         </nav>
         <div className="border-t border-zinc-800 p-3">
           <LogoutButton />
@@ -32,7 +35,13 @@ export default async function SuperLayout({ children }: { children: React.ReactN
           href="/super"
           className="shrink-0 whitespace-nowrap rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 active:bg-zinc-700"
         >
-          🔑 Logins de negocios
+          🔑 Logins
+        </Link>
+        <Link
+          href="/super/pagos"
+          className="shrink-0 whitespace-nowrap rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 active:bg-zinc-700"
+        >
+          💰 Pagos
         </Link>
       </header>
 

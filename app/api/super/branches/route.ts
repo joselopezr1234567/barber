@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (!account || account.role !== "PLATFORM_ADMIN") {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const { name, address, phone, accountId, vertical } = await req.json();
+  const { name, address, phone, accountId, vertical, freeMonths, monthlyPrice } = await req.json();
   if (!name || !name.trim()) {
     return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 });
   }
@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
         phone: phone.trim(),
         vertical: typeof vertical === "string" && vertical ? vertical : "BARBERIA",
         accountId: accountId || null,
+        freeMonths: Number.isInteger(freeMonths) && freeMonths > 0 ? Math.min(freeMonths, 24) : 0,
+        monthlyPrice: Number.isInteger(monthlyPrice) && monthlyPrice > 0 ? monthlyPrice : 10000,
       },
     });
     return NextResponse.json({ branch }, { status: 201 });
