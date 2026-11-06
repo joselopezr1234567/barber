@@ -13,7 +13,7 @@ export default async function SuperLayout({ children }: { children: React.ReactN
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-52 flex-col bg-zinc-900 text-zinc-300 md:flex">
         <div className="border-b border-zinc-800 px-5 py-5">
           <p className="text-lg font-bold text-white">🛡️ Plataforma</p>
-          <p className="text-xs text-zinc-500">{session.name}</p>
+          <p className="text-xs text-zinc-300">{session.name}</p>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           <Link href="/super" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-zinc-800 hover:text-white">

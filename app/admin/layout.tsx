@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-52 flex-col bg-zinc-900 text-zinc-300 md:flex">
         <div className="border-b border-zinc-800 px-5 py-5">
           <p className="text-lg font-bold text-white">Mi negocio</p>
-          <p className="text-xs text-zinc-500">{session.name}</p>
+          <p className="text-xs text-zinc-700">{session.name}</p>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {NAV.map((item) => (
@@ -36,7 +36,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ))}
         </nav>
         <div className="border-t border-zinc-800 p-3">
-          <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-500 transition hover:text-white">
+          <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-700 transition hover:text-white">
             ← Ver sitio público
           </Link>
           <LogoutButton />

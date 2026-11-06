@@ -53,7 +53,7 @@ function ImageField({
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-4">
       <p className="text-sm font-semibold">{kind === "logo" ? "Logo" : "Imagen de fondo (cover)"}</p>
-      <p className="mt-0.5 text-xs text-zinc-500">
+      <p className="mt-0.5 text-xs text-zinc-700">
         {kind === "logo"
           ? "PNG o WebP cuadrado, se muestra junto al nombre del negocio."
           : "Foto ancha que aparece arriba del flujo de reserva personalizado."}
@@ -69,7 +69,7 @@ function ImageField({
               : "h-20 w-36 rounded-lg border border-zinc-200 object-cover"}
           />
         ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-zinc-300 text-zinc-400">
+          <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-zinc-300 text-zinc-600">
             {kind === "logo" ? "🏪" : "🖼️"}
           </div>
         )}
@@ -144,19 +144,19 @@ export default function BrandingView() {
     <div className="min-w-0">
       <div>
         <h1 className="text-2xl font-bold">Personalización</h1>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-700">
           Logo, imagen de fondo y propaganda que ven tus clientes al reservar.
         </p>
       </div>
 
       {loading ? (
-        <p className="mt-6 text-sm text-zinc-400">Cargando…</p>
+        <p className="mt-6 text-sm text-zinc-600">Cargando…</p>
       ) : (
         <div className="mt-6 space-y-6">
           {branches.map((b) => (
             <section key={b.id} className="rounded-2xl border border-zinc-200 bg-white p-5">
               <h2 className="font-semibold">{b.name}</h2>
-              <p className="text-xs text-zinc-500">{b.address}</p>
+              <p className="text-xs text-zinc-700">{b.address}</p>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <ImageField branch={b} kind="logo" current={b.logoUrl} onSaved={load} />
@@ -166,7 +166,7 @@ export default function BrandingView() {
               {/* Propaganda */}
               <div className="mt-4 rounded-xl border border-zinc-200 p-4">
                 <p className="text-sm font-semibold">Propaganda bajo el botón "Reservar cita"</p>
-                <p className="mt-0.5 text-xs text-zinc-500">
+                <p className="mt-0.5 text-xs text-zinc-700">
                   Un anuncio corto (máx. 200 caracteres) con enlace opcional. Ej: "🔥 20% OFF pagando en efectivo".
                 </p>
                 <input
@@ -193,7 +193,7 @@ export default function BrandingView() {
             </section>
           ))}
           {!loading && branches.length === 0 && (
-            <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">No hay sucursales.</p>
+            <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-600">No hay sucursales.</p>
           )}
         </div>
       )}

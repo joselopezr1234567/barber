@@ -101,7 +101,7 @@ export default function ShiftsView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Turnos de trabajo</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-700">
             Configura los bloques de trabajo por día. Dos bloques el mismo día = jornada partida (ej. almuerzo entre medio).
           </p>
         </div>
@@ -155,14 +155,14 @@ export default function ShiftsView() {
               </button>
             </div>
             {days[day].length === 0 ? (
-              <p className="mt-2 text-xs text-zinc-400">Día libre (sin atención)</p>
+              <p className="mt-2 text-xs text-zinc-600">Día libre (sin atención)</p>
             ) : (
               <div className="mt-3 space-y-2">
                 {days[day].map((b, i) => (
                   <div key={i} className="flex items-center gap-2 text-sm">
                     <input type="time" value={b.start} onChange={(e) => setBlock(day, i, "start", e.target.value)}
                       className="rounded-lg border-zinc-300 px-2 py-1.5" />
-                    <span className="text-zinc-400">a</span>
+                    <span className="text-zinc-600">a</span>
                     <input type="time" value={b.end} onChange={(e) => setBlock(day, i, "end", e.target.value)}
                       className="rounded-lg border-zinc-300 px-2 py-1.5" />
                     <button onClick={() => removeBlock(day, i)} className="ml-2 text-xs text-red-500 hover:underline">Eliminar</button>

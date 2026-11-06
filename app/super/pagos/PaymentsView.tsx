@@ -62,7 +62,7 @@ export default function PaymentsView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Pagos mensuales</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-700">
             Plan $10.000/mes por negocio. Los meses de cortesía aparecen como GRATIS.
           </p>
         </div>
@@ -73,10 +73,10 @@ export default function PaymentsView() {
         )}
       </div>
 
-      {loading && <p className="mt-8 text-center text-zinc-400">Cargando…</p>}
+      {loading && <p className="mt-8 text-center text-zinc-600">Cargando…</p>}
 
       {!loading && data.length === 0 && (
-        <p className="mt-8 text-center text-zinc-400">Aún no hay negocios creados.</p>
+        <p className="mt-8 text-center text-zinc-600">Aún no hay negocios creados.</p>
       )}
 
       <div className="mt-6 space-y-4">
@@ -85,7 +85,7 @@ export default function PaymentsView() {
             <div className="flex flex-wrap items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{branch.name}</p>
-                <p className="truncate text-xs text-zinc-500">{branch.ownerEmail ?? "Sin login"}</p>
+                <p className="truncate text-xs text-zinc-700">{branch.ownerEmail ?? "Sin login"}</p>
               </div>
               {branch.freeMonths > 0 && (
                 <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
@@ -124,7 +124,7 @@ export default function PaymentsView() {
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-[11px] text-zinc-400">
+            <p className="mt-2 text-[11px] text-zinc-600">
               Toca un mes para alternar entre pagado ✅ y pendiente ⏳.
             </p>
           </div>

@@ -11,7 +11,7 @@ type BranchRef = { id: string; name: string };
 const inputCls = "mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block text-xs text-zinc-500">{label}{children}</label>;
+  return <label className="block text-xs text-zinc-700">{label}{children}</label>;
 }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
@@ -102,7 +102,7 @@ export default function TrabajadoresView() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-700">
             Profesionales exclusivos de cada negocio. Los inactivos no aparecen al agendar.
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function TrabajadoresView() {
 
       <div className="mt-6 overflow-hidden rounded-xl border-zinc-200 bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
+          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-700">
             <tr>
               <th className="px-4 py-3">Profesional</th>
               <th className="px-4 py-3">Negocio</th>
@@ -125,17 +125,17 @@ export default function TrabajadoresView() {
             {barbers.map((b) => (
               <tr key={b.id} className="border-b border-zinc-100 last:border-0">
                 <td className="px-4 py-3 font-medium">{b.name}</td>
-                <td className="px-4 py-3 text-xs text-zinc-500">{b.branch?.name ?? "—"}</td>
+                <td className="px-4 py-3 text-xs text-zinc-700">{b.branch?.name ?? "—"}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                    b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
                   }`}>
                     {b.active ? "Activo" : "Inactivo"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(b)} className="text-xs font-medium text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => toggleActive(b)} className="ml-3 text-xs font-medium text-zinc-500 hover:underline">
+                  <button onClick={() => toggleActive(b)} className="ml-3 text-xs font-medium text-zinc-700 hover:underline">
                     {b.active ? "Desactivar" : "Activar"}
                   </button>
                   <button onClick={() => remove(b)} className="ml-3 text-xs font-medium text-red-600 hover:underline">Eliminar</button>
@@ -143,9 +143,9 @@ export default function TrabajadoresView() {
               </tr>
             ))}
             {!loading && barbers.length === 0 && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Aún no hay profesionales registrados.</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-600">Aún no hay profesionales registrados.</td></tr>
             )}
-            {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
+            {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-600">Cargando…</td></tr>}
           </tbody>
         </table>
       </div>

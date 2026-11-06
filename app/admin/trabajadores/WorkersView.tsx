@@ -115,7 +115,7 @@ export default function WorkersView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Trabajadores</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-700">
             Profesionales de tus sucursales. Son exclusivos de cada negocio.
           </p>
         </div>
@@ -132,7 +132,7 @@ export default function WorkersView() {
       {/* Tabla en escritorio */}
       <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
+          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-700">
             <tr>
               <th className="px-4 py-3">Nombre</th>
               <th className="px-4 py-3">Sucursal</th>
@@ -145,19 +145,19 @@ export default function WorkersView() {
               <tr key={b.id} className="border-b border-zinc-100 last:border-0">
                 <td className="px-4 py-3">
                   <p className="font-medium">{b.name}</p>
-                  <p className="text-xs text-zinc-500">{b.email ?? "Sin acceso"}</p>
+                  <p className="text-xs text-zinc-700">{b.email ?? "Sin acceso"}</p>
                 </td>
-                <td className="px-4 py-3 text-xs text-zinc-500">{branchName(b)}</td>
+                <td className="px-4 py-3 text-xs text-zinc-700">{branchName(b)}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                    b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
                   }`}>
                     {b.active ? "Activo" : "Inactivo"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(b)} className="text-xs font-medium text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => toggleActive(b)} className="ml-3 text-xs font-medium text-zinc-500 hover:underline">
+                  <button onClick={() => toggleActive(b)} className="ml-3 text-xs font-medium text-zinc-700 hover:underline">
                     {b.active ? "Desactivar" : "Activar"}
                   </button>
                   <button onClick={() => remove(b)} className="ml-3 text-xs font-medium text-red-600 hover:underline">Eliminar</button>
@@ -165,11 +165,11 @@ export default function WorkersView() {
               </tr>
             ))}
             {!loading && !barbers.length && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-600">
                 No hay trabajadores aún. Crea el primero.
               </td></tr>
             )}
-            {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
+            {loading && <tr><td colSpan={4} className="px-4 py-8 text-center text-zinc-600">Cargando…</td></tr>}
           </tbody>
         </table>
       </div>
@@ -181,25 +181,25 @@ export default function WorkersView() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-medium">{b.name}</p>
-                <p className="text-xs text-zinc-500">{branchName(b)}</p>
+                <p className="text-xs text-zinc-700">{branchName(b)}</p>
               </div>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                b.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
               }`}>
                 {b.active ? "Activo" : "Inactivo"}
               </span>
             </div>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
               <button onClick={() => openEdit(b)} className="text-blue-600 hover:underline">Editar</button>
-              <button onClick={() => toggleActive(b)} className="text-zinc-500 hover:underline">{b.active ? "Desactivar" : "Activar"}</button>
+              <button onClick={() => toggleActive(b)} className="text-zinc-700 hover:underline">{b.active ? "Desactivar" : "Activar"}</button>
               <button onClick={() => remove(b)} className="text-red-600 hover:underline">Eliminar</button>
             </div>
           </div>
         ))}
         {!loading && !barbers.length && (
-          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">No hay trabajadores aún. Crea el primero.</p>
+          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-600">No hay trabajadores aún. Crea el primero.</p>
         )}
-        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">Cargando…</p>}
+        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-600">Cargando…</p>}
       </div>
 
       {/* Modal crear */}
@@ -261,7 +261,7 @@ export default function WorkersView() {
 const inputCls = "mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block text-xs text-zinc-500">{label}{children}</label>;
+  return <label className="block text-xs text-zinc-700">{label}{children}</label>;
 }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {

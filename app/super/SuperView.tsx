@@ -187,7 +187,7 @@ export default function SuperView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Logins de negocios</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-700">
             Crea y administra las cuentas que usan los negocios para entrar a su panel.
           </p>
         </div>
@@ -210,7 +210,7 @@ export default function SuperView() {
       {/* Tabla en escritorio */}
       <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
+          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-700">
             <tr>
               <th className="px-4 py-3">Cuenta</th>
               <th className="px-4 py-3">Rol</th>
@@ -225,7 +225,7 @@ export default function SuperView() {
               <tr key={a.id} className="border-b border-zinc-100 last:border-0">
                 <td className="px-4 py-3">
                   <p className="font-medium">{a.name}</p>
-                  <p className="text-xs text-zinc-500">{a.email}</p>
+                  <p className="text-xs text-zinc-700">{a.email}</p>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
@@ -237,7 +237,7 @@ export default function SuperView() {
                 <td className="px-4 py-3 text-xs">{branchNames(a)}</td>
                 <td className="px-4 py-3 text-xs">
                   {barberCounts(a) === 0 ? (
-                    <span className="text-zinc-400">—</span>
+                    <span className="text-zinc-600">—</span>
                   ) : (
                     <button
                       onClick={() => setViewingBarbers(a)}
@@ -249,14 +249,14 @@ export default function SuperView() {
                 </td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                    a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
                   }`}>
                     {a.active ? "Activa" : "Desactivada"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(a)} className="text-xs font-medium text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => toggleActive(a)} className="ml-3 text-xs font-medium text-zinc-500 hover:underline">
+                  <button onClick={() => toggleActive(a)} className="ml-3 text-xs font-medium text-zinc-700 hover:underline">
                     {a.active ? "Desactivar" : "Activar"}
                   </button>
                 </td>
@@ -265,7 +265,7 @@ export default function SuperView() {
             {!loading && branchesFull.length > 0 && (
               <>
                 <tr>
-                  <td colSpan={6} className="bg-zinc-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  <td colSpan={6} className="bg-zinc-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-700">
                     Negocios (sucursales)
                   </td>
                 </tr>
@@ -273,7 +273,7 @@ export default function SuperView() {
                   <tr key={b.id} className="border-b border-zinc-100 last:border-0">
                     <td className="px-4 py-3">
                       <p className="font-medium">{b.name}</p>
-                      <p className="text-xs text-zinc-500">Dueño: {b.ownerName ?? "—"}{b.ownerEmail ? ` (${b.ownerEmail})` : ""}</p>
+                      <p className="text-xs text-zinc-700">Dueño: {b.ownerName ?? "—"}{b.ownerEmail ? ` (${b.ownerEmail})` : ""}</p>
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Negocio</span>
@@ -288,7 +288,7 @@ export default function SuperView() {
                 ))}
               </>
             )}
-            {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-400">Cargando…</td></tr>}
+            {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-600">Cargando…</td></tr>}
           </tbody>
         </table>
       </div>
@@ -300,33 +300,33 @@ export default function SuperView() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-medium">{a.name}</p>
-                <p className="text-xs text-zinc-500">{a.email}</p>
-                <p className="mt-1 text-xs text-zinc-500">Sucursales: {branchNames(a)}</p>
+                <p className="text-xs text-zinc-700">{a.email}</p>
+                <p className="mt-1 text-xs text-zinc-700">Sucursales: {branchNames(a)}</p>
               </div>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                a.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
               }`}>
                 {a.active ? "Activa" : "Desactivada"}
               </span>
             </div>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
               <button onClick={() => openEdit(a)} className="text-blue-600 hover:underline">Editar</button>
-              <button onClick={() => toggleActive(a)} className="text-zinc-500 hover:underline">{a.active ? "Desactivar" : "Activar"}</button>
+              <button onClick={() => toggleActive(a)} className="text-zinc-700 hover:underline">{a.active ? "Desactivar" : "Activar"}</button>
             </div>
           </div>
         ))}
-        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">Cargando…</p>}
+        {loading && <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-600">Cargando…</p>}
 
         {branchesFull.length > 0 && (
           <>
-            <p className="px-1 pt-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Negocios (sucursales)</p>
+            <p className="px-1 pt-2 text-xs font-semibold uppercase tracking-wide text-zinc-700">Negocios (sucursales)</p>
             {branchesFull.map((b) => (
               <div key={b.id} className="rounded-xl border border-zinc-200 bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium">{b.name}</p>
-                    <p className="text-xs text-zinc-500">{b.address ?? ""}</p>
-                    <p className="text-xs text-zinc-500">Dueño: {b.ownerName ?? "—"}</p>
+                    <p className="text-xs text-zinc-700">{b.address ?? ""}</p>
+                    <p className="text-xs text-zinc-700">Dueño: {b.ownerName ?? "—"}</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Negocio</span>
                 </div>
@@ -343,7 +343,7 @@ export default function SuperView() {
       {creatingBranch && (
         <Modal onClose={() => setCreatingBranch(false)}>
           <h3 className="font-semibold">Nuevo negocio</h3>
-          <p className="mt-0.5 text-xs text-zinc-500">Se crea la sucursal y opcionalmente su login para /admin.</p>
+          <p className="mt-0.5 text-xs text-zinc-700">Se crea la sucursal y opcionalmente su login para /admin.</p>
           <div className="mt-4 space-y-3">
             <Field label="Rubro del negocio">
               <select value={branchForm.vertical} onChange={(e) => setBranchForm({ ...branchForm, vertical: e.target.value })} className={inputCls}>
@@ -373,7 +373,7 @@ export default function SuperView() {
                   className={inputCls}
                 />
               </Field>
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-[11px] text-zinc-700">
                 Plan: $10.000/mes desde que se crea el local. Los meses indicados quedan gratis.
               </p>
             </div>
@@ -448,20 +448,20 @@ export default function SuperView() {
       {viewingBarbers && (
         <Modal onClose={() => setViewingBarbers(null)}>
           <h3 className="font-semibold">Trabajadores de {viewingBarbers.name}</h3>
-          <p className="mt-0.5 text-xs text-zinc-500">{viewingBarbers.email}</p>
+          <p className="mt-0.5 text-xs text-zinc-700">{viewingBarbers.email}</p>
           <div className="mt-4 space-y-3">
             {allBarbers(viewingBarbers).length === 0 ? (
-              <p className="text-sm text-zinc-400">Este negocio aún no registra trabajadores.</p>
+              <p className="text-sm text-zinc-600">Este negocio aún no registra trabajadores.</p>
             ) : (
               viewingBarbers.branches.map((b) => (
                 <div key={b.id}>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{b.name}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-700">{b.name}</p>
                   <ul className="mt-1 divide-y divide-zinc-100 rounded-lg border border-zinc-200">
                     {(b.barbers ?? []).map((w) => (
                       <li key={w.id} className="flex items-center justify-between px-3 py-2 text-sm">
                         <span>{w.name}</span>
                         <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          w.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                          w.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
                         }`}>
                           {w.active ? "Activo" : "Inactivo"}
                         </span>
@@ -484,7 +484,7 @@ export default function SuperView() {
       {editing && (
         <Modal onClose={() => setEditing(null)}>
           <h3 className="font-semibold">Editar cuenta</h3>
-          <p className="mt-0.5 text-xs text-zinc-500">{editing.email}</p>
+          <p className="mt-0.5 text-xs text-zinc-700">{editing.email}</p>
           <div className="mt-4 space-y-3">
             <Field label="Nombre">
               <input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
@@ -524,7 +524,7 @@ export default function SuperView() {
 const inputCls = "mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block text-xs text-zinc-500">{label}{children}</label>;
+  return <label className="block text-xs text-zinc-700">{label}{children}</label>;
 }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {

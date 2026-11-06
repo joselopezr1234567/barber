@@ -20,7 +20,7 @@ const STATUS_META: Record<string, { label: string; badge: string; dot: string }>
   RESERVADO: { label: "Reservado", badge: "bg-blue-100 text-blue-800 border-blue-200", dot: "bg-blue-500" },
   CONFIRMADO: { label: "Confirmado", badge: "bg-green-100 text-green-800 border-green-200", dot: "bg-green-500" },
   ATENDIDO: { label: "Atendido", badge: "bg-emerald-100 text-emerald-800 border-emerald-200", dot: "bg-emerald-500" },
-  CANCELADO: { label: "Cancelado", badge: "bg-zinc-200 text-zinc-500 border-zinc-300", dot: "bg-zinc-400" },
+  CANCELADO: { label: "Cancelado", badge: "bg-zinc-200 text-zinc-700 border-zinc-300", dot: "bg-zinc-400" },
   NO_ASISTIO: { label: "No asistió", badge: "bg-red-100 text-red-700 border-red-200", dot: "bg-red-500" },
 };
 
@@ -138,7 +138,7 @@ export default function AgendaView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Agenda</h1>
-          <p className="text-sm capitalize text-zinc-500">{dayLabel}</p>
+          <p className="text-sm capitalize text-zinc-700">{dayLabel}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <select
@@ -184,7 +184,7 @@ export default function AgendaView() {
             <div key={barber.id} className="w-72 shrink-0 rounded-xl border-zinc-200 bg-white md:w-auto">
               <div className="border-b border-zinc-200 px-4 py-3">
                 <p className="font-semibold">{barber.name}</p>
-                <p className="text-xs text-zinc-500">Turno: {shiftLabel}</p>
+                <p className="text-xs text-zinc-700">Turno: {shiftLabel}</p>
               </div>
               <div className="space-y-2 p-3">
                 {bookings
@@ -265,14 +265,14 @@ export default function AgendaView() {
                 ))}
 
                 {list.length === 0 && barberBlocks.length === 0 && (
-                  <p className="py-6 text-center text-xs text-zinc-400">
+                  <p className="py-6 text-center text-xs text-zinc-600">
                     {barberShifts.length === 0 ? "Sin turno este día" : "Sin citas"}
                   </p>
                 )}
 
                 <button
                   onClick={() => setBlockForm({ ...blockForm, open: true, barberId: barber.id })}
-                  className="w-full rounded-lg border-dashed border-zinc-300 py-2 text-xs text-zinc-500 transition hover:border-zinc-400 hover:text-zinc-700"
+                  className="w-full rounded-lg border-dashed border-zinc-300 py-2 text-xs text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-700"
                 >
                   + Bloquear tiempo
                 </button>
@@ -287,20 +287,20 @@ export default function AgendaView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setBlockForm({ ...blockForm, open: false })}>
           <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold">Bloquear tiempo</h3>
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-zinc-700">
               {barbers.find((b) => b.id === blockForm.barberId)?.name} · {prettyDate(date)}
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <label className="text-xs text-zinc-500">Desde
+              <label className="text-xs text-zinc-700">Desde
                 <input type="time" value={blockForm.start} onChange={(e) => setBlockForm({ ...blockForm, start: e.target.value })}
                   className="mt-1 w-full rounded-lg border-zinc-300 px-2 py-1.5 text-sm" />
               </label>
-              <label className="text-xs text-zinc-500">Hasta
+              <label className="text-xs text-zinc-700">Hasta
                 <input type="time" value={blockForm.end} onChange={(e) => setBlockForm({ ...blockForm, end: e.target.value })}
                   className="mt-1 w-full rounded-lg border-zinc-300 px-2 py-1.5 text-sm" />
               </label>
             </div>
-            <label className="mt-3 block text-xs text-zinc-500">Motivo
+            <label className="mt-3 block text-xs text-zinc-700">Motivo
               <input value={blockForm.reason} onChange={(e) => setBlockForm({ ...blockForm, reason: e.target.value })}
                 placeholder="Almuerzo, imprevisto…"
                 className="mt-1 w-full rounded-lg border-zinc-300 px-2 py-1.5 text-sm" />
@@ -317,7 +317,7 @@ export default function AgendaView() {
         </div>
       )}
 
-      {loading && <p className="mt-4 animate-pulse text-sm text-zinc-400">Cargando agenda…</p>}
+      {loading && <p className="mt-4 animate-pulse text-sm text-zinc-600">Cargando agenda…</p>}
     </div>
   );
 }

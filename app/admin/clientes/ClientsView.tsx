@@ -104,7 +104,7 @@ export default function ClientsView() {
       {/* Lista */}
       <div className={selected ? "w-full md:w-80 md:shrink-0" : "w-full max-w-2xl"}>
         <h1 className="text-2xl font-bold">Clientes</h1>
-        <p className="text-sm text-zinc-500">Ficha digital con historial de visitas y notas del profesional.</p>
+        <p className="text-sm text-zinc-700">Ficha digital con historial de visitas y notas del profesional.</p>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -122,14 +122,14 @@ export default function ClientsView() {
             >
               <div>
                 <p className="font-medium">{c.name}</p>
-                <p className="text-xs text-zinc-500">{c.phone}</p>
+                <p className="text-xs text-zinc-700">{c.phone}</p>
               </div>
               <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600">
                 {c._count.bookings} visitas
               </span>
             </button>
           ))}
-          {rows.length === 0 && <p className="px-4 py-8 text-center text-sm text-zinc-400">Sin resultados.</p>}
+          {rows.length === 0 && <p className="px-4 py-8 text-center text-sm text-zinc-600">Sin resultados.</p>}
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export default function ClientsView() {
             <div className="flex items-start justify-between border-b border-zinc-200 px-5 py-4">
               <div>
                 <h2 className="text-lg font-bold">{selected.name}</h2>
-                <p className="text-sm text-zinc-500">{selected.phone}{selected.email ? ` · ${selected.email}` : ""}</p>
+                <p className="text-sm text-zinc-700">{selected.phone}{selected.email ? ` · ${selected.email}` : ""}</p>
               </div>
               <div className="flex shrink-0 items-center gap-3">
                 <button onClick={deactivateClient} className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-100">
@@ -149,14 +149,14 @@ export default function ClientsView() {
                 <button onClick={deleteClient} className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">
                   Eliminar
                 </button>
-                <button onClick={() => setSelected(null)} className="text-xs text-zinc-400 hover:text-zinc-700">Cerrar ✕</button>
+                <button onClick={() => setSelected(null)} className="text-xs text-zinc-600 hover:text-zinc-700">Cerrar ✕</button>
               </div>
             </div>
 
             <div className="grid md:grid-cols-2">
               {/* Historial */}
               <div className="border-b border-zinc-200 p-5 md:border-b-0 md:border-r">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-700">
                   Historial de visitas ({selected.bookings.length})
                 </h3>
                 <ul className="mt-3 max-h-96 space-y-3 overflow-y-auto pr-1">
@@ -178,25 +178,25 @@ export default function ClientsView() {
                     </li>
                   ))}
                   {selected.bookings.length === 0 && (
-                    <li className="text-sm text-zinc-400">Sin visitas registradas.</li>
+                    <li className="text-sm text-zinc-600">Sin visitas registradas.</li>
                   )}
                 </ul>
               </div>
 
               {/* Notas privadas */}
               <div className="p-5">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-700">
                   Notas privadas del profesional
                 </h3>
                 <ul className="mt-3 max-h-56 space-y-2 overflow-y-auto pr-1">
                   {selected.notes.map((n) => (
                     <li key={n.id} className="rounded-lg bg-amber-50 p-3 text-sm">
                       <p>{n.text}</p>
-                      <p className="mt-1 text-[10px] text-zinc-500">— {n.barber.name}</p>
+                      <p className="mt-1 text-[10px] text-zinc-700">— {n.barber.name}</p>
                     </li>
                   ))}
                   {selected.notes.length === 0 && (
-                    <li className="text-sm text-zinc-400">Sin notas todavía.</li>
+                    <li className="text-sm text-zinc-600">Sin notas todavía.</li>
                   )}
                 </ul>
 

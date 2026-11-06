@@ -77,7 +77,7 @@ export default function ServicesView() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Catálogo de servicios</h1>
-          <p className="text-sm text-zinc-500">Nombre, duración y precio. Pausa los servicios que no ofreces ahora.</p>
+          <p className="text-sm text-zinc-700">Nombre, duración y precio. Pausa los servicios que no ofreces ahora.</p>
         </div>
         <button onClick={openCreate} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800">
           + Agregar servicio
@@ -87,7 +87,7 @@ export default function ServicesView() {
       {/* Tabla en escritorio */}
       <div className="mt-6 hidden overflow-hidden rounded-xl border border-zinc-200 bg-white sm:block">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
+          <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-700">
             <tr>
               <th className="px-4 py-3">Servicio</th>
               <th className="px-4 py-3">Duración</th>
@@ -101,20 +101,20 @@ export default function ServicesView() {
               <tr key={s.id} className="border-b border-zinc-100 last:border-0">
                 <td className="px-4 py-3">
                   <p className="font-medium">{s.name}</p>
-                  {s.description && <p className="text-xs text-zinc-500">{s.description}</p>}
+                  {s.description && <p className="text-xs text-zinc-700">{s.description}</p>}
                 </td>
                 <td className="px-4 py-3">{s.durationMin} min</td>
                 <td className="px-4 py-3 font-medium">{formatPrice(s.price)}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    s.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                    s.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
                   }`}>
                     {s.active ? "Activo" : "Pausado"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(s)} className="text-xs font-medium text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => toggle(s)} className="ml-3 text-xs font-medium text-zinc-500 hover:underline">
+                  <button onClick={() => toggle(s)} className="ml-3 text-xs font-medium text-zinc-700 hover:underline">
                     {s.active ? "Pausar" : "Activar"}
                   </button>
                   <button onClick={() => remove(s)} className="ml-3 text-xs font-medium text-red-600 hover:underline">Eliminar</button>
@@ -122,7 +122,7 @@ export default function ServicesView() {
               </tr>
             ))}
             {services.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-zinc-400">No hay servicios todavía.</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-zinc-600">No hay servicios todavía.</td></tr>
             )}
           </tbody>
         </table>
@@ -135,10 +135,10 @@ export default function ServicesView() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-medium">{s.name}</p>
-                {s.description && <p className="text-xs text-zinc-500">{s.description}</p>}
+                {s.description && <p className="text-xs text-zinc-700">{s.description}</p>}
               </div>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                s.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-500"
+                s.active ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"
               }`}>
                 {s.active ? "Activo" : "Pausado"}
               </span>
@@ -146,13 +146,13 @@ export default function ServicesView() {
             <p className="mt-2 text-sm text-zinc-600">{s.durationMin} min · <span className="font-semibold">{formatPrice(s.price)}</span></p>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 pt-3 text-xs font-medium">
               <button onClick={() => openEdit(s)} className="text-blue-600 hover:underline">Editar</button>
-              <button onClick={() => toggle(s)} className="text-zinc-500 hover:underline">{s.active ? "Pausar" : "Activar"}</button>
+              <button onClick={() => toggle(s)} className="text-zinc-700 hover:underline">{s.active ? "Pausar" : "Activar"}</button>
               <button onClick={() => remove(s)} className="text-red-600 hover:underline">Eliminar</button>
             </div>
           </div>
         ))}
         {services.length === 0 && (
-          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-400">No hay servicios todavía.</p>
+          <p className="rounded-xl bg-white py-8 text-center text-sm text-zinc-600">No hay servicios todavía.</p>
         )}
       </div>
       {(editing || creating) && (
@@ -160,21 +160,21 @@ export default function ServicesView() {
           <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold">{editing ? "Editar servicio" : "Nuevo servicio"}</h3>
             <div className="mt-4 space-y-3">
-              <label className="block text-xs text-zinc-500">Nombre
+              <label className="block text-xs text-zinc-700">Nombre
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm" />
               </label>
-              <label className="block text-xs text-zinc-500">Descripción
+              <label className="block text-xs text-zinc-700">Descripción
                 <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm" />
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <label className="block text-xs text-zinc-500">Duración (min)
+                <label className="block text-xs text-zinc-700">Duración (min)
                   <input type="number" min="5" step="5" value={form.durationMin}
                     onChange={(e) => setForm({ ...form, durationMin: e.target.value })}
                     className="mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm" />
                 </label>
-                <label className="block text-xs text-zinc-500">Precio
+                <label className="block text-xs text-zinc-700">Precio
                   <input type="number" min="0" step="500" value={form.price}
                     onChange={(e) => setForm({ ...form, price: e.target.value })}
                     className="mt-1 w-full rounded-lg border-zinc-300 px-3 py-2 text-sm" />

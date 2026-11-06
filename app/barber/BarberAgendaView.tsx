@@ -117,7 +117,7 @@ export default function BarberAgendaView({
       <header className="bg-zinc-900 px-4 py-4 text-white sm:px-6">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate text-xs uppercase tracking-wide text-zinc-400">{branchName}</p>
+            <p className="truncate text-xs uppercase tracking-wide text-zinc-600">{branchName}</p>
             <h1 className="truncate text-lg font-bold sm:text-xl">Mi agenda — {barberName}</h1>
           </div>
           <button
@@ -137,7 +137,7 @@ export default function BarberAgendaView({
             onChange={(e) => setDate(e.target.value)}
             className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm sm:flex-none"
           />
-          <span className="text-sm text-zinc-500">
+          <span className="text-sm text-zinc-700">
             {loading ? "Cargando…" : `${total} cita${total === 1 ? "" : "s"}`}
           </span>
           {ingresos > 0 && (
@@ -159,7 +159,7 @@ export default function BarberAgendaView({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{b.client?.name ?? "Cliente"}</p>
-                  <p className="truncate text-sm text-zinc-500">
+                  <p className="truncate text-sm text-zinc-700">
                     {b.service?.name ?? "Servicio"}
                     {b.client?.phone ? ` · ${b.client.phone}` : ""}
                   </p>
@@ -202,7 +202,7 @@ export default function BarberAgendaView({
             </div>
           ))}
           {!loading && !bookings.length && (
-            <div className="rounded-xl bg-white p-10 text-center text-zinc-400 shadow-sm">
+            <div className="rounded-xl bg-white p-10 text-center text-zinc-600 shadow-sm">
               No tienes citas para este día.
             </div>
           )}
