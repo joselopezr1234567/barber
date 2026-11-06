@@ -22,12 +22,12 @@ const STATUS_LABEL: Record<string, string> = {
   NOTIFICADO: "Avisado",
 };
 const STATUS_CLS: Record<string, string> = {
-  RESERVADO: "bg-blue-100 text-blue-700",
-  CONFIRMADO: "bg-green-100 text-green-700",
-  ATENDIDO: "bg-emerald-100 text-emerald-700",
-  CANCELADO: "bg-red-100 text-red-600",
-  NO_ASISTIO: "bg-zinc-200 text-zinc-600",
-  NOTIFICADO: "bg-teal-100 text-teal-700",
+  RESERVADO: "bg-blue-100 text-zinc-900",
+  CONFIRMADO: "bg-green-100 text-zinc-900",
+  ATENDIDO: "bg-emerald-100 text-zinc-900",
+  CANCELADO: "bg-red-100 text-zinc-900",
+  NO_ASISTIO: "bg-zinc-200 text-zinc-900",
+  NOTIFICADO: "bg-teal-100 text-zinc-900",
 };
 
 function fmtTime(min: number) {
@@ -102,6 +102,20 @@ export default function BarberAgendaView({
     load();
   };
 
+  const notifyBooking = async (bookingId: string) => {
+    const res = await fetch("/api/barber/agenda/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.error ?? "Error al enviar la notificación");
+      return;
+    }
+    load();
+  };
+
   const logout = async () => {
     await fetch("/api/auth/barber/logout", { method: "POST" });
     window.location.href = "/login";
@@ -135,7 +149,7 @@ export default function BarberAgendaView({
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm sm:flex-none"
+            className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 sm:flex-none"
           />
           <span className="text-sm text-zinc-700">
             {loading ? "Cargando…" : `${total} cita${total === 1 ? "" : "s"}`}
@@ -181,12 +195,21 @@ export default function BarberAgendaView({
                 <select
                   value={b.status}
                   onChange={(e) => setStatus(b.id, e.target.value)}
-                  className="ml-auto rounded-lg border border-zinc-300 px-2 py-1.5 text-xs"
+                  className="ml-auto rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs text-zinc-900"
                 >
                   {["RESERVADO", "ATENDIDO", "CANCELADO", "NO_ASISTIO"].map((s) => (
                     <option key={s} value={s}>{STATUS_LABEL[s]}</option>
                   ))}
                 </select>
+                {b.status === "RESERVADO" && (
+                  <button
+                    onClick={() => notifyBooking(b.id)}
+                    title="Enviar notificación al celular del cliente para que confirme"
+                    className="rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-500"
+                  >
+                    🔔 Pedir confirmación
+                  </button>
+                )}
                 {b.status === "RESERVADO" && (
                   <a
                     href={b.client?.phone ? `https://wa.me/${b.client.phone.replace(/\D/g, "")}` : "#"}
