@@ -3,7 +3,15 @@
 @tailwind utilities;
 
 :root {
+  /* El sitio público es oscuro; los paneles /admin y /super fuerzan su propio
+     esquema claro (ver .scheme-light) para que los inputs nativos no salgan
+     con fondo negro y texto invisible. */
   color-scheme: dark;
+}
+
+/* Paneles de fondo claro: inputs nativos (date, select, etc.) en modo claro */
+.scheme-light {
+  color-scheme: light;
 }
 
 html {

@@ -144,7 +144,7 @@ export default function AgendaView() {
           <select
             value={branchId ?? ""}
             onChange={(e) => setBranchId(e.target.value)}
-            className="rounded-lg border-zinc-300 bg-white px-3 py-2 text-sm"
+            className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900"
           >
             {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>

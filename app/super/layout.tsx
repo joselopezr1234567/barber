@@ -8,7 +8,7 @@ export default async function SuperLayout({ children }: { children: React.ReactN
   if (!session || session.role !== "PLATFORM_ADMIN") redirect("/login");
 
   return (
-    <div className="min-h-screen bg-zinc-100 text-zinc-900">
+    <div className="scheme-light min-h-screen bg-zinc-100 text-zinc-900">
       {/* Sidebar: escritorio */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-52 flex-col bg-zinc-900 text-zinc-300 md:flex">
         <div className="border-b border-zinc-800 px-5 py-5">
