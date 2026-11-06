@@ -113,7 +113,7 @@ export default function BarberAgendaView({
     .reduce((sum, b) => sum + (b.service?.priceMin ?? 0), 0);
 
   return (
-    <div className="min-h-dvh bg-zinc-100">
+    <div className="scheme-light min-h-dvh bg-zinc-100">
       <header className="bg-zinc-900 px-4 py-4 text-white sm:px-6">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
@@ -155,10 +155,10 @@ export default function BarberAgendaView({
             >
               <div className="flex items-center gap-4">
                 <div className="w-16 shrink-0 text-center">
-                  <p className="text-lg font-bold">{fmtTime(b.startMin)}</p>
+                  <p className="text-lg font-bold text-zinc-900">{fmtTime(b.startMin)}</p>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{b.client?.name ?? "Cliente"}</p>
+                  <p className="truncate font-medium text-zinc-900">{b.client?.name ?? "Cliente"}</p>
                   <p className="truncate text-sm text-zinc-700">
                     {b.service?.name ?? "Servicio"}
                     {b.client?.phone ? ` · ${b.client.phone}` : ""}
