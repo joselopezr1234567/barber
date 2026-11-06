@@ -10,7 +10,7 @@ type Barber = { id: string; name: string };
 type Service = { id: string; name: string; durationMin: number; price: number };
 type Client = { id: string; name: string; phone: string };
 type Booking = {
-  id: string; startMin: number; endMin: number; status: string; reminderStatus?: string;
+  id: string; token: string; startMin: number; endMin: number; status: string; reminderStatus?: string;
   service: Service; client: Client; barberId: string | null;
 };
 type Block = { id: string; barberId: string; startMin: number; endMin: number; reason: string | null };
@@ -232,6 +232,37 @@ export default function AgendaView() {
                               </button>
                             ))}
                             <div className="my-1 border-t border-zinc-200" />
+                            {b.status === "RESERVADO" && (
+                              <button
+                                onClick={async () => {
+                                  setOpenMenu(null);
+                                  const res = await fetch("/api/admin/bookings/notify", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ bookingId: b.id }),
+                                  });
+                                  if (res.ok) {
+                                    alert("🔔 Notificación enviada al cliente");
+                                    load();
+                                    return;
+                                  }
+                                  if (res.status === 409) {
+                                    // Sin dispositivo registrado: WhatsApp con el enlace
+                                    const link = `${window.location.origin}/c/${b.token}`;
+                                    const msg = encodeURIComponent(
+                                      `¡Hola ${b.client.name.split(" ")[0]}! 👋 Para avisarte de tu cita con un recordatorio automático, activa las notificaciones en este enlace (un toque y listo):\n${link}\n\nAhí mismo también puedes ✅ confirmar, 🔄 reprogramar o ❌ cancelar tu cita.`
+                                    );
+                                    window.open(`https://wa.me/${b.client.phone.replace(/\D/g, "")}?text=${msg}`, "_blank");
+                                    return;
+                                  }
+                                  const data = await res.json().catch(() => ({}));
+                                  alert(data.error ?? "Error al enviar la notificación");
+                                }}
+                                className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-zinc-100"
+                              >
+                                🔔 Pedir confirmación
+                              </button>
+                            )}
                             {b.client.phone && (
                               <a
                                 href={`https://wa.me/${b.client.phone.replace(/\D/g, "")}`}

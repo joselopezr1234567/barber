@@ -18,6 +18,10 @@ export async function GET(req: NextRequest) {
     orderBy: { startMin: "asc" },
   });
 
+  // Exponer el token al profesional: le permite abrir/copiar el enlace
+  // público de la reserva (p. ej. para pedir confirmación por WhatsApp).
+  const withToken = bookings.map((b) => ({ ...b, token: b.token }));
+
   const blocks = await prisma.block.findMany({
     where: { date, barberId: session.id },
   });
@@ -27,7 +31,7 @@ export async function GET(req: NextRequest) {
     where: { weekday, barberId: session.id },
   });
 
-  return NextResponse.json({ bookings, blocks, shifts });
+  return NextResponse.json({ bookings: withToken, blocks, shifts });
 }
 
 /** El barbero puede actualizar el estado de sus propias citas. */

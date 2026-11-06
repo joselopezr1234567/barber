@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 type Booking = {
   id: string;
+  token: string;
   startMin: number;
   status: string;
   reminderStatus?: string;
@@ -110,6 +111,22 @@ export default function BarberAgendaView({
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // Sin dispositivo registrado: abrir WhatsApp con mensaje listo para que
+      // el cliente active las notificaciones desde su enlace de reserva.
+      if (res.status === 409) {
+        const b = bookings.find((x) => x.id === bookingId);
+        const link = b?.token ? `${window.location.origin}/c/${b.token}` : window.location.origin;
+        const nombre = b?.client?.name?.split(" ")[0] ?? "";
+        const msg = encodeURIComponent(
+          `¡Hola ${nombre}! 👋 Para avisarte de tu cita con un recordatorio automático, activa las notificaciones en este enlace (un toque y listo):
+${link}
+
+Ahí mismo también puedes ✅ confirmar, 🔄 reprogramar o ❌ cancelar tu cita.`
+        );
+        const phone = b?.client?.phone?.replace(/\D/g, "") ?? "";
+        window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+        return;
+      }
       alert(data.error ?? "Error al enviar la notificación");
       return;
     }
