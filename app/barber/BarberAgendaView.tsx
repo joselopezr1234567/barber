@@ -118,10 +118,7 @@ export default function BarberAgendaView({
         const link = b?.token ? `${window.location.origin}/c/${b.token}` : window.location.origin;
         const nombre = b?.client?.name?.split(" ")[0] ?? "";
         const msg = encodeURIComponent(
-          `¡Hola ${nombre}! 👋 Para avisarte de tu cita con un recordatorio automático, activa las notificaciones en este enlace (un toque y listo):
-${link}
-
-Ahí mismo también puedes ✅ confirmar, 🔄 reprogramar o ❌ cancelar tu cita.`
+          `Hola ${nombre}! 👋 Tu cita necesita confirmación.\n\nToca el enlace de abajo para activar tus recordatorios y gestionar tu cita:\n\n👇👇👇\n${link}\n👆👆👆\n\nEn ese enlace puedes activar notificaciones, ✅ confirmar, 🔄 reprogramar o ❌ cancelar. ¡Te esperamos!`
         );
         const phone = b?.client?.phone?.replace(/\D/g, "") ?? "";
         window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");

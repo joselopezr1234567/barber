@@ -250,7 +250,7 @@ export default function AgendaView() {
                                     // Sin dispositivo registrado: WhatsApp con el enlace
                                     const link = `${window.location.origin}/c/${b.token}`;
                                     const msg = encodeURIComponent(
-                                      `¡Hola ${b.client.name.split(" ")[0]}! 👋 Para avisarte de tu cita con un recordatorio automático, activa las notificaciones en este enlace (un toque y listo):\n${link}\n\nAhí mismo también puedes ✅ confirmar, 🔄 reprogramar o ❌ cancelar tu cita.`
+                                      `Hola ${b.client.name.split(" ")[0]}! 👋 Tu cita necesita confirmación.\n\nToca el botón de abajo para activar tus recordatorios y gestionar tu cita:\n\n👇👇👇\n${link}\n👆👆👆\n\nEn ese enlace puedes activar notificaciones, ✅ confirmar, 🔄 reprogramar o ❌ cancelar. ¡Te esperamos!`
                                     );
                                     window.open(`https://wa.me/${b.client.phone.replace(/\D/g, "")}?text=${msg}`, "_blank");
                                     return;
